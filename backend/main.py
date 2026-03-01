@@ -15,7 +15,12 @@ query_history = []
 # Allow frontend to talk to backend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
+    allow_origins=[
+        "http://localhost:5173", 
+        "http://localhost:3000", 
+        "https://contextos.netlify.app",
+        "*" # Broadly allow all origins just in case of deployment previews
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
