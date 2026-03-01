@@ -18,9 +18,9 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5173", 
         "http://localhost:3000", 
-        "https://contextos.netlify.app",
-        "*" # Broadly allow all origins just in case of deployment previews
+        "https://contextos.netlify.app"
     ],
+    allow_origin_regex=r"https://.*\.netlify\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
