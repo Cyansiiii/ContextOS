@@ -7,3 +7,4 @@ httpx==0.25.2
 langchain==0.1.0
 langchain-community==0.0.10
 chromadb==0.4.15
+langchain-text-splitters
