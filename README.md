@@ -2,6 +2,8 @@
 
 ContextOS is a comprehensive, local AI-powered company memory engine. It acts as a highly secure, privacy-first knowledge base where you can upload documents, emails, meeting notes, and internal decisions into a Vector Database. The system uses local LLMs to intelligently retrieve and answer questions based solely on your verified company knowledge.
 
+Website -Link -https://contextos-du1q.vercel.app/
+
 ## 🚀 Key Features
 
 - **Local AI Engine**: Powered by **Ollama** running `Mistral 7B` and `Nomic Embed Text`. Completely offline, ensuring zero data retention and maximum privacy.
