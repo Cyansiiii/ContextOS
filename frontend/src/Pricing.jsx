@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BorderBeam } from "@/components/ui/border-beam"
 import { ScrollMarkerReveal } from "@/components/ui/scroll-marker-reveal"
+import CompetitorTable from './components/CompetitorTable';
 import './Pricing.css';
 
 export default function Pricing() {
@@ -297,6 +298,9 @@ export default function Pricing() {
                 </motion.div>
 
             </motion.div>
+
+            {/* F-21: COMPETITOR TABLE */}
+            <CompetitorTable />
 
             {/* ── BOTTOM TRUST STRIP ── */}
             <motion.div

@@ -12,13 +12,15 @@ import { ScrollMarkerReveal } from "./components/ui/scroll-marker-reveal"
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts'
 import {
   Search, Database, MessageSquare, BrainCircuit,
-  Activity, UploadCloud, Zap, Menu, X,
+  Activity, UploadCloud, Zap, Menu, X, Shield,
   CheckCircle2, ShieldCheck, Sparkles, Files, Briefcase,
   Bell, Clock, ArrowUpRight, Plus, MoreHorizontal, Video, FileText, CheckCircle, Github
 } from 'lucide-react'
 import GmailCard from './components/GmailCard'
 import AmdStatusCard from './components/AmdStatusCard'
 import ErrorCard from './components/ErrorCard'
+import DPDPPage from './pages/DPDPPage'
+import SlackCard from './components/SlackCard'
 
 // MOCK DATA for floating bubbles to simulate Guru homepage
 const FLOATING_CHATS = [
@@ -88,6 +90,9 @@ function App() {
   // F-13: Query history
   const [queryHistory, setQueryHistory] = useState([])
 
+  // F-20: Benchmarks
+  const [benchmarks, setBenchmarks] = useState(null)
+
   // F-16: Mobile menu
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
@@ -127,6 +132,15 @@ function App() {
     const interval = setInterval(fetchHistory, 10000)
     return () => clearInterval(interval)
   }, [API])
+
+  // F-20: Fetch benchmarks helper
+  const fetchBenchmarks = useCallback(() => {
+    axios.get(`${API}/benchmarks`).then(({ data }) => setBenchmarks(data)).catch(() => {})
+  }, [API])
+
+  useEffect(() => {
+    fetchBenchmarks()
+  }, [fetchBenchmarks])
 
   // F-13: Relative time helper
   const relativeTime = useCallback((isoStr) => {
@@ -168,7 +182,10 @@ function App() {
       setSources(response.data.sources || [])
       setConfidence(response.data.confidence || '')
       setChunksSearched(response.data.chunks_searched || 0)
-      setResponseTime(elapsed)
+      setResponseTime(response.data.response_time)
+      
+      // Update benchmarks after a query
+      fetchBenchmarks()
     } catch (error) {
       console.error(error)
       setErrorData({
@@ -320,53 +337,54 @@ function App() {
     <div className="min-h-screen text-slate-800 dark:text-slate-200 selection:bg-purple-200 overflow-x-hidden relative hero-gradient">
 
       {/* FIXED NAVBAR */}
-      <nav className="fixed top-0 left-0 right-0 z-50 glass-nav transition-all duration-300 py-3">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
-          <div className="flex-1 flex justify-start items-center">
+      <nav className="fixed top-0 left-0 right-0 z-50 glass-nav transition-all duration-300 h-14 flex items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between w-full h-full">
+          <div className="flex justify-start items-center">
             {/* F-16: Hamburger for mobile */}
-            <button className="lg:hidden w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-300 mr-2" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            <button className="md:hidden w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-600 dark:text-slate-300 mr-2" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
-            <div className="flex items-center gap-2 cursor-pointer mr-6 lg:mr-12" onClick={() => { setActiveTab('search'); setMobileMenuOpen(false) }}>
-              <span className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white font-['Outfit']">ContextOS</span>
-            </div>
-
-            <div className="hidden lg:flex items-center gap-2 bg-slate-100/50 dark:bg-slate-800/50 p-1 rounded-full border border-slate-200/50 dark:border-slate-700/50">
-              <button onClick={() => setActiveTab('dashboard')} className={`px-6 py-2 rounded-full text-sm font-semibold transition-all ${activeTab === 'dashboard' ? 'bg-[#212121] text-white shadow-md' : 'text-slate-500 hover:text-slate-800'}`}>Dashboard</button>
-              <button onClick={() => setActiveTab('search')} className={`px-6 py-2 rounded-full text-sm font-semibold transition-all ${activeTab === 'search' ? 'bg-[#212121] text-white shadow-md' : 'text-slate-500 hover:text-slate-800'}`}>Tasks & Search</button>
-              <button onClick={() => setActiveTab('upload')} className={`px-6 py-2 rounded-full text-sm font-semibold transition-all ${activeTab === 'upload' ? 'bg-[#212121] text-white shadow-md' : 'text-slate-500 hover:text-slate-800'}`}>Analytics</button>
+            <div className="flex items-center gap-2 cursor-pointer" onClick={() => { setActiveTab('search'); setMobileMenuOpen(false) }}>
+              <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white font-['Outfit']">ContextOS</span>
             </div>
           </div>
 
-          <div className="flex items-center justify-end gap-2 sm:gap-3 flex-1">
-            <button className="hidden sm:flex w-10 h-10 items-center justify-center rounded-full hover:bg-slate-100 transition-colors text-slate-500">
-              <Search className="w-5 h-5" />
+          <div className="hidden md:flex items-center justify-center gap-1">
+            <button onClick={() => setActiveTab('dashboard')} className={`px-3 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'dashboard' ? 'bg-slate-900 dark:bg-slate-800 text-white font-medium' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white'}`}>Dashboard</button>
+            <button onClick={() => setActiveTab('search')} className={`px-3 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'search' ? 'bg-slate-900 dark:bg-slate-800 text-white font-medium' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white'}`}>Tasks & Search</button>
+            <button onClick={() => setActiveTab('upload')} className={`px-3 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'upload' ? 'bg-slate-900 dark:bg-slate-800 text-white font-medium' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white'}`}>Analytics</button>
+            <button onClick={() => setActiveTab('dpdp')} className={`px-3 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'dpdp' ? 'bg-slate-900 dark:bg-slate-800 text-[#6EE7C3] font-medium' : 'text-[#6EE7C3] hover:text-[#6EE7C3]/80'}`}>DPDP Act ✓</button>
+          </div>
+
+          <div className="flex items-center justify-end gap-2 sm:gap-3">
+            <button className="hidden sm:flex w-8 h-8 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-500">
+              <Search className="w-4 h-4" />
             </button>
-            <button className="hidden sm:flex w-10 h-10 items-center justify-center rounded-full hover:bg-slate-100 transition-colors text-slate-500 relative">
-              <Bell className="w-5 h-5" />
-              <div className="absolute top-2 right-2 w-2 h-2 bg-emerald-500 rounded-full border-2 border-white"></div>
+            <button className="hidden sm:flex w-8 h-8 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-500 relative">
+              <Bell className="w-4 h-4" />
+              <div className="absolute top-1 right-1 w-2 h-2 bg-emerald-500 rounded-full border border-white"></div>
             </button>
-            <a href="https://github.com/Cyansiiii/ContexOS" target="_blank" rel="noopener noreferrer" className="hidden md:flex w-10 h-10 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-500 dark:text-slate-400">
-              <Github className="w-5 h-5" />
+            <a href="https://github.com/Cyansiiii/ContexOS" target="_blank" rel="noopener noreferrer" className="hidden md:flex w-8 h-8 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-500 dark:text-slate-400">
+              <Github className="w-4 h-4" />
             </a>
-            <AnimatedThemeToggler className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-500 dark:text-slate-400 focus:outline-none" />
-            <div className="h-10 pl-2 sm:pl-3 flex items-center gap-2 sm:gap-3 border-l border-slate-200 dark:border-slate-800 ml-1 sm:ml-2 cursor-pointer">
-              <div className="w-9 h-9 rounded-full bg-blue-600 overflow-hidden text-white flex items-center justify-center font-bold shrink-0">C</div>
+            <AnimatedThemeToggler className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-500 dark:text-slate-400 focus:outline-none" />
+            <div className="h-8 pl-2 flex items-center gap-2 border-l border-slate-200 dark:border-slate-800 ml-1 cursor-pointer">
+              <div className="w-8 h-8 rounded-full bg-blue-600 overflow-hidden text-white flex items-center justify-center font-bold text-xs shrink-0">C</div>
               <div className="hidden md:block text-left">
-                <p className="text-sm font-bold text-slate-900 dark:text-white leading-tight">Anant Anandam</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">anant.anandam@gmail.com</p>
+                <p className="text-[13px] font-bold text-slate-900 dark:text-white leading-tight">Anant Anandam</p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium tracking-tight">anant.anandam@gmail.com</p>
               </div>
             </div>
           </div>
         </div>
         {/* F-16: Mobile dropdown menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden absolute top-full left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200/50 dark:border-slate-700/50 shadow-xl animate-slide-up">
+          <div className="md:hidden absolute top-full left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200/50 dark:border-slate-700/50 shadow-xl animate-slide-up">
             <div className="flex flex-col p-4 gap-2">
-              {['dashboard', 'search', 'upload'].map(tab => (
+              {['dashboard', 'search', 'upload', 'dpdp'].map(tab => (
                 <button key={tab} onClick={() => { setActiveTab(tab); setMobileMenuOpen(false) }}
                   className={`w-full text-left px-5 py-3 rounded-xl text-sm font-semibold transition-all min-h-[44px] ${activeTab === tab ? 'bg-[#212121] text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}`}>
-                  {tab === 'dashboard' ? 'Dashboard' : tab === 'search' ? 'Tasks & Search' : 'Analytics'}
+                  {tab === 'dashboard' ? 'Dashboard' : tab === 'search' ? 'Tasks & Search' : tab === 'dpdp' ? 'DPDP Act ✓' : 'Analytics'}
                 </button>
               ))}
             </div>
@@ -471,6 +489,23 @@ function App() {
                     }`}
                   >Find an Expert</button>
                 </div>
+
+                {/* F-20: Benchmark Display */}
+                {benchmarks && (
+                  <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 mt-6 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                    <span className="flex items-center gap-1.5 opacity-80">
+                      ⚡ Avg Response: <span className="text-[#6EE7C3] tabular-nums">{benchmarks.avg_query_ms ? (benchmarks.avg_query_ms / 1000).toFixed(1) : '0.0'}s</span>
+                    </span>
+                    <span className="hidden sm:block w-px h-3 bg-slate-300 dark:bg-slate-700"></span>
+                    <span className="flex items-center gap-1.5 opacity-80">
+                      🏆 Fastest: <span className="text-[#6EE7C3] tabular-nums">{benchmarks.fastest_query_ms ? (benchmarks.fastest_query_ms / 1000).toFixed(1) : '0.0'}s</span>
+                    </span>
+                    <span className="hidden sm:block w-px h-3 bg-slate-300 dark:bg-slate-700"></span>
+                    <span className="flex items-center gap-1.5 opacity-80">
+                      🔒 Cloud Calls: <span className="text-[#ED1C24] tabular-nums">0</span>
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* F-08: DEMO SCENARIOS (collapsible) */}
@@ -736,7 +771,7 @@ function App() {
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <GmailCard />
-                {/* Future: SlackCard, NotionCard, etc. */}
+                <SlackCard />
               </div>
             </div>
 
@@ -1236,6 +1271,26 @@ function App() {
                 </div>
               </div>
             </div>
+
+            {/* F-23: India-First Badges */}
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 text-center">
+              <div className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full">
+                <span className="text-sm">🇮🇳</span>
+                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Proudly Made in Bengaluru, India</span>
+              </div>
+              <div className="hidden sm:block w-1.5 h-1.5 rounded-full bg-slate-700"></div>
+              <button onClick={() => {setActiveTab('dpdp'); window.scrollTo(0, 0);}} className="flex items-center gap-2 px-4 py-2 bg-[#6EE7C3]/5 hover:bg-[#6EE7C3]/10 border border-[#6EE7C3]/20 rounded-full transition-colors cursor-pointer group">
+                <Shield className="w-3.5 h-3.5 text-[#6EE7C3]" />
+                <span className="text-[11px] font-bold text-[#6EE7C3] uppercase tracking-widest group-hover:text-white transition-colors">Fully Compliant with DPDP Act 2023</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* --- F-19: DPDP COMPLIANCE PAGE --- */}
+        {activeTab === 'dpdp' && (
+          <div className="animate-slide-up w-full px-4 relative z-20">
+            <DPDPPage activeTab={activeTab} setActiveTab={setActiveTab} />
           </div>
         )}
       </main>

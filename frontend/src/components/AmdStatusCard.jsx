@@ -127,6 +127,7 @@ function Skeleton() {
 export default function AmdStatusCard() {
   const [status, setStatus] = useState(null)
   const [metrics, setMetrics] = useState(null)
+  const [benchmarks, setBenchmarks] = useState(null)
   const [loading, setLoading] = useState(true)
   const intervalRef = useRef(null)
 
@@ -169,8 +170,12 @@ export default function AmdStatusCard() {
       const { data } = await axios.get(`${API}/amd/metrics`)
       setMetrics(data)
     } catch {
-      // Silently fail — keep showing last known metrics
+      // Silently fail
     }
+    try {
+      const { data } = await axios.get(`${API}/benchmarks`)
+      setBenchmarks(data)
+    } catch {}
   }
 
   if (loading || !status) return <Skeleton />
@@ -278,6 +283,19 @@ export default function AmdStatusCard() {
                   </p>
                 </div>
               </div>
+
+              {/* F-20: Benchmarks Display */}
+              {benchmarks && (
+                <div className="mt-4 pt-3 border-t border-white/5">
+                  <p className="text-[10px] text-slate-500 font-medium flex gap-2">
+                    <span>Avg response: {benchmarks.avg_query_ms ? (benchmarks.avg_query_ms / 1000).toFixed(1) : '0.0'}s</span>
+                    <span>&bull;</span>
+                    <span>Fastest: {benchmarks.fastest_query_ms ? (benchmarks.fastest_query_ms / 1000).toFixed(1) : '0.0'}s</span>
+                    <span>&bull;</span>
+                    <span>Grade: <span className={benchmarks.performance_grade === 'A' ? 'text-[#6EE7C3] font-bold' : ''}>{benchmarks.performance_grade}</span></span>
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* AMD framing note — honest */}

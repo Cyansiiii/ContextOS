@@ -21,6 +21,11 @@ app = FastAPI()
 # Store recent queries in memory (In production, use a database)
 query_history = []
 
+# F-20: Benchmarks tracking
+embed_times = []
+total_queries_served = 0
+server_start_time = time.time()
+
 # Allow frontend to talk to backend
 app.add_middleware(
     CORSMiddleware,
@@ -93,7 +98,13 @@ async def upload_document(req: UploadRequest):
         "content_type_label": CONTENT_TYPE_LABELS.get(content_type, "Document"),
         "type": "company_data",
     }
+    start_time = time.time()
     store_memory(req.content, metadata)
+    elapsed_ms = int((time.time() - start_time) * 1000)
+    embed_times.append(elapsed_ms)
+    if len(embed_times) > 20:
+        embed_times.pop(0)
+
     return {"status": "Memory stored successfully", "content_type": content_type}
 
 
@@ -141,6 +152,10 @@ async def ask_question(req: AskRequest):
 
     # Build context
     context = "\n".join([doc.page_content for doc in relevant_docs])
+
+    # F-20: Track usage
+    global total_queries_served
+    total_queries_served += 1
 
     # Ask LLM
     try:
@@ -400,6 +415,22 @@ async def find_expert(topic: str):
         "experts": experts,
         "source_documents": list(all_sources),
         "answer": answer,
+    }
+
+
+# ═══════════════════════════════════════════
+# F-18: Dummy Slack Integration Endpoint
+# ═══════════════════════════════════════════
+
+import asyncio
+
+@app.post("/slack/sync")
+async def sync_slack():
+    await asyncio.sleep(2) # Simulate processing
+    return {
+        "status": "success",
+        "channels_synced": 12,
+        "message": "Connected and synced 12 Slack channels."
     }
 
 
