@@ -30,46 +30,72 @@ const FLOATING_CHATS = [
 ]
 
 function App() {
+  const API = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+
   const [question, setQuestion] = useState('')
   const [answer, setAnswer] = useState('')
   const [sources, setSources] = useState([])
+  const [confidence, setConfidence] = useState('')
+  const [chunksSearched, setChunksSearched] = useState(0)
+  const [responseTime, setResponseTime] = useState(null)
   const [loading, setLoading] = useState(false)
   const [activeTab, setActiveTab] = useState('search')
   const [activityPeriod, setActivityPeriod] = useState('Week')
   const [statKey, setStatKey] = useState(0)
-  // Trigger re-animation when tab changes
   useEffect(() => { setStatKey(k => k + 1) }, [activityPeriod, activeTab])
 
   // Initialize smooth scrolling with Lenis
   useEffect(() => {
-    const lenis = new Lenis({
-      autoRaf: true,
-    });
-
-    return () => {
-      lenis.destroy();
-    };
+    const lenis = new Lenis({ autoRaf: true });
+    return () => { lenis.destroy() };
   }, []);
-  // To force replace  = useState('search') // 'search', 'upload', 'dashboard'
 
+  // Upload state
   const [uploadContent, setUploadContent] = useState('')
   const [uploadSource, setUploadSource] = useState('document')
   const [uploading, setUploading] = useState(false)
   const [uploadMessage, setUploadMessage] = useState('')
 
+  // F-07: Expert Finder mode
+  const [searchMode, setSearchMode] = useState('ask') // 'ask' or 'expert'
+  const [expertResult, setExpertResult] = useState(null)
+
+  // F-06: Decision DNA form fields
+  const [decisionTitle, setDecisionTitle] = useState('')
+  const [decisionWhat, setDecisionWhat] = useState('')
+  const [decisionWhy, setDecisionWhy] = useState('')
+  const [decisionRejected, setDecisionRejected] = useState('')
+  const [decisionWho, setDecisionWho] = useState('')
+  const [decisionDate, setDecisionDate] = useState(new Date().toISOString().split('T')[0])
+  const [decisionTags, setDecisionTags] = useState('')
+  const [decisionMsg, setDecisionMsg] = useState('')
+
+  // F-08: Demo scenarios
+  const [demoScenariosOpen, setDemoScenariosOpen] = useState(false)
 
 
+  // ── F-09: Enhanced Ask with source chips + confidence ──
   const askQuestion = async () => {
     if (!question.trim()) return;
     setLoading(true)
     setAnswer('')
+    setSources([])
+    setConfidence('')
+    setChunksSearched(0)
+    setResponseTime(null)
+    setExpertResult(null)
+
+    const t0 = performance.now()
+
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/ask`,
-        { question: question }
-      )
+      const response = await axios.post(`${API}/ask`, { question })
+      const elapsed = ((performance.now() - t0) / 1000).toFixed(1)
+
       setAnswer(response.data.answer)
       setSources(response.data.sources || [])
+      setConfidence(response.data.confidence || '')
+      setChunksSearched(response.data.chunks_searched || 0)
+      setResponseTime(elapsed)
     } catch (error) {
       console.error(error)
       setAnswer('Error reaching ContextOS API. Check if backend is running.')
@@ -77,15 +103,40 @@ function App() {
     setLoading(false)
   }
 
+
+  // ── F-07: Expert Finder search ──
+  const handleExpertSearch = async () => {
+    if (!question.trim()) return;
+    setLoading(true)
+    setExpertResult(null)
+    setAnswer('')
+    setSources([])
+
+    try {
+      const { data } = await axios.get(`${API}/memory/expert`, {
+        params: { topic: question }
+      })
+      setExpertResult(data)
+    } catch (error) {
+      console.error(error)
+      setExpertResult({ experts: [], answer: 'Error reaching ContextOS API.' })
+    }
+    setLoading(false)
+  }
+
+
+  // ── F-10: Enhanced Upload with content_type ──
   const handleUpload = async () => {
     if (!uploadContent.trim()) return;
     setUploading(true);
     setUploadMessage('');
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/upload`, {
+      await axios.post(`${API}/upload`, {
         content: uploadContent,
         source: uploadSource,
-        date: new Date().toISOString()
+        date: new Date().toISOString(),
+        content_type: uploadSource,
+        author: 'team',
       });
       setUploadMessage('Memory stored successfully!');
       setUploadContent('');
@@ -95,6 +146,81 @@ function App() {
     }
     setUploading(false);
   }
+
+
+  // ── F-06: Decision DNA submit ──
+  const handleDecisionSubmit = async () => {
+    if (!decisionTitle.trim() || !decisionWhat.trim()) return;
+    setUploading(true);
+    setDecisionMsg('');
+    try {
+      await axios.post(`${API}/memory/decision`, {
+        title: decisionTitle,
+        what_decided: decisionWhat,
+        why_decided: decisionWhy,
+        what_rejected: decisionRejected,
+        who_decided: decisionWho || 'Unknown',
+        date: decisionDate,
+        tags: decisionTags ? decisionTags.split(',').map(t => t.trim()) : [],
+      });
+      setDecisionMsg('Decision DNA stored. This decision is now permanent company memory — searchable forever, even after you leave.');
+      setDecisionTitle('');
+      setDecisionWhat('');
+      setDecisionWhy('');
+      setDecisionRejected('');
+      setDecisionWho('');
+      setDecisionTags('');
+    } catch (error) {
+      console.error(error);
+      setDecisionMsg('Failed to store decision.');
+    }
+    setUploading(false);
+  }
+
+
+  // ── F-08: Demo scenario click handler ──
+  const handleDemoScenario = (text, mode = 'ask') => {
+    setSearchMode(mode)
+    setQuestion(text)
+    setExpertResult(null)
+    setAnswer('')
+    setSources([])
+    // Auto-submit after 500ms delay for dramatic effect
+    setTimeout(() => {
+      if (mode === 'expert') {
+        // We need to call expert search with the text directly
+        setLoading(true)
+        axios.get(`${API}/memory/expert`, { params: { topic: text } })
+          .then(({ data }) => { setExpertResult(data); setLoading(false) })
+          .catch(() => { setExpertResult({ experts: [], answer: 'Error.' }); setLoading(false) })
+      } else {
+        // Trigger ask
+        setLoading(true)
+        const t0 = performance.now()
+        axios.post(`${API}/ask`, { question: text })
+          .then(({ data }) => {
+            const elapsed = ((performance.now() - t0) / 1000).toFixed(1)
+            setAnswer(data.answer)
+            setSources(data.sources || [])
+            setConfidence(data.confidence || '')
+            setChunksSearched(data.chunks_searched || 0)
+            setResponseTime(elapsed)
+            setLoading(false)
+          })
+          .catch(() => { setAnswer('Error reaching API.'); setLoading(false) })
+      }
+    }, 500)
+  }
+
+  // F-08: Onboarding setup
+  const setupOnboarding = async () => {
+    try {
+      await axios.post(`${API}/demo/setup-onboarding`)
+      alert('✅ Onboarding Co-pilot ready — 3 memories added')
+    } catch { alert('Failed to set up onboarding data.') }
+  }
+
+
   const chartData = activityPeriod === 'Week' ? [
     { d: 'Mon', h: 60 }, { d: 'Tue', h: 75 }, { d: 'Wed', h: 95, active: true, val: '8.2h' }, { d: 'Thu', h: 50 }, { d: 'Fri', h: 85 }, { d: 'Sat', h: 40 }, { d: 'Sun', h: 65 }
   ] : activityPeriod === 'Month' ? [
@@ -209,7 +335,7 @@ function App() {
               </div>
 
               {/* HUGE SEARCH BAR */}
-              <div className="max-w-3xl mx-auto relative z-20 mb-8">
+              <div className="max-w-3xl mx-auto relative z-20 mb-4">
                 <div className="relative group">
                   <div className="absolute -inset-1 bg-gradient-to-r from-purple-600/20 to-blue-500/20 rounded-full blur-lg opacity-0 group-focus-within:opacity-100 transition-opacity duration-500"></div>
                   <div className="relative bg-white dark:bg-[#1a1c22] border border-slate-200 dark:border-slate-800 flex items-center p-3 rounded-full shadow-2xl hover:shadow-xl transition-all h-20 pl-8">
@@ -218,56 +344,206 @@ function App() {
                       type="text"
                       value={question}
                       onChange={(e) => setQuestion(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && askQuestion()}
-                      placeholder="Ask anything about your company's knowledge..."
+                      onKeyDown={(e) => e.key === 'Enter' && (searchMode === 'expert' ? handleExpertSearch() : askQuestion())}
+                      placeholder={searchMode === 'expert' ? "Who knows about... (e.g. payment API)" : "Ask anything about your company's knowledge..."}
                       className="w-full bg-transparent border-none outline-none text-slate-800 dark:text-slate-100 text-xl px-4 py-2 font-medium placeholder-slate-400 dark:placeholder-slate-500"
                     />
                     <button
-                      onClick={askQuestion}
+                      onClick={searchMode === 'expert' ? handleExpertSearch : askQuestion}
                       disabled={loading}
                       className="bg-[#8250f2] hover:bg-[#7245d6] text-white px-8 h-full rounded-full font-bold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[140px]"
                     >
                       {loading ? (
                         <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                      ) : 'Search'}
+                      ) : searchMode === 'expert' ? 'Find Expert 🔍' : 'Search'}
                     </button>
                   </div>
                 </div>
+
+                {/* F-07: Ask / Expert mode toggle */}
+                <div className="flex items-center justify-center gap-2 mt-4">
+                  <button
+                    onClick={() => { setSearchMode('ask'); setExpertResult(null) }}
+                    className={`px-5 py-2 rounded-full text-sm font-semibold transition-all border ${searchMode === 'ask'
+                      ? 'bg-[#8250f2] text-white border-[#8250f2] shadow-md'
+                      : 'bg-transparent text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-[#8250f2]'
+                    }`}
+                  >Ask a Question</button>
+                  <button
+                    onClick={() => { setSearchMode('expert'); setAnswer(''); setSources([]) }}
+                    className={`px-5 py-2 rounded-full text-sm font-semibold transition-all border ${searchMode === 'expert'
+                      ? 'bg-[#6EE7C3] text-slate-900 border-[#6EE7C3] shadow-md'
+                      : 'bg-transparent text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-[#6EE7C3]'
+                    }`}
+                  >Find an Expert</button>
+                </div>
               </div>
 
-              {/* AI ANSWER REGION */}
+              {/* F-08: DEMO SCENARIOS (collapsible) */}
+              <div className="max-w-3xl mx-auto relative z-20 mb-8">
+                <button
+                  onClick={() => setDemoScenariosOpen(!demoScenariosOpen)}
+                  className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 flex items-center gap-2 mx-auto transition-colors"
+                >
+                  <span>{demoScenariosOpen ? '▾' : '▸'}</span> Demo Scenarios
+                </button>
+                {demoScenariosOpen && (
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3 animate-slide-up">
+                    <button
+                      onClick={() => handleDemoScenario('Who do I talk to about the payment system?', 'ask')}
+                      className="p-4 rounded-xl bg-white/[0.03] dark:bg-white/[0.03] border border-dashed border-[#6EE7C3]/20 hover:border-[#6EE7C3] hover:border-solid transition-all text-left group"
+                    >
+                      <span className="text-lg mb-1 block">🧑‍💼</span>
+                      <p className="text-sm font-bold text-slate-700 dark:text-slate-300 group-hover:text-[#6EE7C3] transition-colors">New Joiner</p>
+                      <p className="text-[11px] text-slate-500 mt-0.5">Click to ask as a new joiner</p>
+                    </button>
+                    <button
+                      onClick={() => handleDemoScenario('Why did we switch from AWS to Railway?', 'ask')}
+                      className="p-4 rounded-xl bg-white/[0.03] dark:bg-white/[0.03] border border-dashed border-[#6EE7C3]/20 hover:border-[#6EE7C3] hover:border-solid transition-all text-left group"
+                    >
+                      <span className="text-lg mb-1 block">🔍</span>
+                      <p className="text-sm font-bold text-slate-700 dark:text-slate-300 group-hover:text-[#6EE7C3] transition-colors">Decision Lookup</p>
+                      <p className="text-[11px] text-slate-500 mt-0.5">Click to look up a past decision</p>
+                    </button>
+                    <button
+                      onClick={() => handleDemoScenario('payment integration', 'expert')}
+                      className="p-4 rounded-xl bg-white/[0.03] dark:bg-white/[0.03] border border-dashed border-[#6EE7C3]/20 hover:border-[#6EE7C3] hover:border-solid transition-all text-left group"
+                    >
+                      <span className="text-lg mb-1 block">🧠</span>
+                      <p className="text-sm font-bold text-slate-700 dark:text-slate-300 group-hover:text-[#6EE7C3] transition-colors">Expert Find</p>
+                      <p className="text-[11px] text-slate-500 mt-0.5">Click to find a team expert</p>
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* F-07: EXPERT FINDER RESULTS */}
+              {expertResult && (
+                <div className="max-w-3xl mx-auto mb-20 animate-slide-up">
+                  <div className="glass-card rounded-[2rem] p-8 text-left relative overflow-hidden border border-[#6EE7C3]/20">
+                    <div className="flex items-start gap-4 mb-6">
+                      <div className="w-10 h-10 rounded-full bg-[#6EE7C3]/10 text-[#6EE7C3] flex items-center justify-center shrink-0 shadow-lg">
+                        <BrainCircuit className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Expert Finder</h3>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Topic: {expertResult.topic}</p>
+                      </div>
+                    </div>
+
+                    {expertResult.experts && expertResult.experts.length > 0 ? (
+                      <div className="space-y-3 pl-14">
+                        {expertResult.experts.map((expert, i) => (
+                          <div key={i} className="p-4 rounded-xl bg-white/5 border border-[#6EE7C3]/15 backdrop-blur-sm">
+                            <div className="flex items-center gap-3 mb-2">
+                              <div className="w-8 h-8 rounded-full bg-[#6EE7C3]/20 flex items-center justify-center text-sm font-bold text-[#6EE7C3]">
+                                {expert.name[0]}
+                              </div>
+                              <span className="text-lg font-bold text-slate-900 dark:text-white">{expert.name}</span>
+                              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                                expert.confidence === 'High' ? 'bg-[#6EE7C3]/10 text-[#6EE7C3] border-[#6EE7C3]/25' :
+                                expert.confidence === 'Medium' ? 'bg-amber-500/10 text-amber-500 border-amber-500/25' :
+                                'bg-red-500/10 text-red-500 border-red-500/25'
+                              }`}>{expert.confidence}</span>
+                              <span className="text-xs text-slate-500">{expert.evidence_count} documents</span>
+                            </div>
+                            {expert.sources && expert.sources.length > 0 && (
+                              <div className="flex flex-wrap gap-2 mt-2">
+                                {expert.sources.map((src, j) => (
+                                  <span key={j} className="text-[11px] px-2 py-1 rounded-full bg-[#6EE7C3]/5 border border-[#6EE7C3]/15 text-slate-400 font-medium">{src}</span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-slate-500 pl-14">{expertResult.answer}</p>
+                    )}
+
+                    {expertResult.answer && expertResult.experts?.length > 0 && (
+                      <p className="text-sm text-slate-500 dark:text-slate-400 mt-4 pl-14 font-medium">{expertResult.answer}</p>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* F-09: AI ANSWER REGION — Enhanced with Source Chips */}
               {answer && (
                 <div className="max-w-3xl mx-auto mb-20 animate-slide-up">
                   <div className="glass-card rounded-[2rem] p-8 text-left relative overflow-hidden group">
                     <BorderBeam duration={8} size={300} reverse className="from-transparent via-purple-500 to-transparent" />
-                    {/* Glowing corner effect */}
                     <div className="absolute -top-20 -right-20 w-48 h-48 bg-purple-500/20 blur-3xl rounded-full"></div>
 
+                    {/* Header */}
                     <div className="flex items-start gap-4 mb-6 relative z-10">
                       <div className="w-10 h-10 rounded-full bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 flex items-center justify-center shrink-0 shadow-lg">
                         <Sparkles className="w-5 h-5" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Verified Answer</h3>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Sourced from internal docs</p>
+                        <h3 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">ContextOS Answer</h3>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Mistral 7B (local)</p>
                       </div>
                     </div>
+
+                    {/* Answer text */}
                     <p className="text-lg text-slate-700 dark:text-slate-300 leading-relaxed font-medium pl-14 relative z-10">
                       {answer}
                     </p>
-                    <div className="pl-14 mt-6 flex gap-3 relative z-10">
-                      {sources.map((s, i) => (
-                        <div key={i} className="flex items-center gap-2 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-3 py-2 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 cursor-pointer transition-colors shadow-sm dark:shadow-none">
-                          <FileText className="w-4 h-4 text-[#8250f2] dark:text-purple-400" /> {s}
+
+                    {/* Source Chips */}
+                    {sources.length > 0 && (
+                      <div className="pl-14 mt-6 relative z-10">
+                        <p className="text-[11px] font-bold uppercase tracking-[0.1em] text-slate-400 dark:text-slate-500 mb-2">Sources</p>
+                        <div className="flex flex-wrap gap-2">
+                          {sources.map((s, i) => {
+                            const typeIcon = {
+                              'meeting_notes': '📋', 'document': '📄', 'email': '📧',
+                              'decision': '⚡', 'slack': '💬',
+                            }[s.source_type] || '📄'
+                            const name = (s.source_name || 'unknown').length > 30
+                              ? (s.source_name || 'unknown').slice(0, 30) + '…'
+                              : (s.source_name || 'unknown')
+                            return (
+                              <div
+                                key={i}
+                                className="group/chip relative flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#6EE7C3]/10 border border-[#6EE7C3]/30 text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-[#6EE7C3]/20 cursor-pointer transition-all"
+                                title={s.excerpt || ''}
+                              >
+                                <span className="text-sm">{typeIcon}</span>
+                                <span>{name}</span>
+                              </div>
+                            )
+                          })}
                         </div>
-                      ))}
+                      </div>
+                    )}
+
+                    {/* Confidence + Meta */}
+                    <div className="pl-14 mt-5 flex flex-wrap items-center gap-3 relative z-10 text-sm">
+                      {confidence && (
+                        <span className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold border ${
+                          confidence === 'High' ? 'bg-[#6EE7C3]/10 text-[#6EE7C3] border-[#6EE7C3]/25' :
+                          confidence === 'Medium' ? 'bg-amber-500/10 text-amber-500 border-amber-500/25' :
+                          'bg-red-500/10 text-red-500 border-red-500/25'
+                        }`}>
+                          <CheckCircle className="w-3 h-3" /> Confidence: {confidence}
+                        </span>
+                      )}
+                      {chunksSearched > 0 && (
+                        <span className="text-xs text-slate-500 font-medium">{chunksSearched} chunks searched</span>
+                      )}
+                      {responseTime && (
+                        <span className="text-xs text-slate-500 font-medium">Answered in {responseTime}s — locally on this device</span>
+                      )}
+                      <span className="text-xs text-[#ED1C24] font-bold">⚡ 0 external API calls</span>
                     </div>
                   </div>
                 </div>
               )}
 
               {/* FLOATING BUBBLES BACKGROUND (Visible on Desktop) */}
-              {!answer && (
+              {!answer && !expertResult && (
                 <div className="hidden lg:block absolute top-[10%] left-0 right-0 bottom-0 pointer-events-none z-0">
                   <div className="relative w-full h-full max-w-7xl mx-auto">
                     {FLOATING_CHATS.map((chat, idx) => (
@@ -286,7 +562,6 @@ function App() {
                       </div>
                     ))}
 
-                    {/* Verified absolute badge mock */}
                     <div className="absolute right-0 bottom-32 animate-float bg-white dark:bg-[#1a1c22] rounded-2xl p-4 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-none border border-slate-100 dark:border-white/10 flex flex-col items-center">
                       <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-500/10 flex items-center justify-center mb-2">
                         <CheckCircle2 className="w-6 h-6 text-emerald-500 dark:text-emerald-400" />
@@ -332,59 +607,146 @@ function App() {
 
             <div className="glass-card rounded-[2rem] p-8 md:p-12 relative overflow-hidden group">
               <BorderBeam duration={8} size={300} reverse className="from-transparent via-blue-500 to-transparent" />
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 border-b border-slate-100 pb-8 mb-8 relative z-10">
+
+              {/* F-10: Content Type Selector — 5 types */}
+              <div className="grid grid-cols-3 md:grid-cols-5 gap-3 border-b border-slate-100 dark:border-slate-800 pb-8 mb-8 relative z-10">
                 {[
-                  { id: 'document', icon: <Files className="w-5 h-5" />, label: "Document" },
-                  { id: 'email', icon: <MessageSquare className="w-5 h-5" />, label: "Email" },
-                  { id: 'meeting_notes', icon: <Briefcase className="w-5 h-5" />, label: "Notes" },
-                  { id: 'decision', icon: <Activity className="w-5 h-5" />, label: "Decision" }
+                  { id: 'document', icon: '📄', label: "Document" },
+                  { id: 'email', icon: '📧', label: "Email" },
+                  { id: 'meeting_notes', icon: '📋', label: "Meeting" },
+                  { id: 'decision', icon: '⚡', label: "Decision" },
+                  { id: 'slack', icon: '💬', label: "Slack" },
                 ].map(t => (
                   <button
                     key={t.id}
-                    onClick={() => setUploadSource(t.id)}
+                    onClick={() => { setUploadSource(t.id); setDecisionMsg(''); setUploadMessage(''); }}
                     className={`flex flex-col items-center justify-center gap-2 p-4 rounded-2xl transition-all border-2 ${uploadSource === t.id
-                      ? 'border-[#8250f2] bg-purple-50 dark:bg-purple-900/20 text-[#8250f2] dark:text-purple-400'
+                      ? t.id === 'decision'
+                        ? 'border-[#ED1C24] bg-red-50 dark:bg-red-900/10 text-[#ED1C24]'
+                        : 'border-[#8250f2] bg-purple-50 dark:bg-purple-900/20 text-[#8250f2] dark:text-purple-400'
                       : 'border-transparent bg-slate-50 dark:bg-[#1a1c22]/50 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#252830]'
                       }`}
                   >
-                    {t.icon}
+                    <span className="text-2xl">{t.icon}</span>
                     <span className="text-sm font-semibold">{t.label}</span>
                   </button>
                 ))}
               </div>
 
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-semibold text-slate-900 dark:text-white mb-2">Paste Content</label>
-                  <textarea
-                    value={uploadContent}
-                    onChange={(e) => setUploadContent(e.target.value)}
-                    placeholder="Paste the raw text of the document or notes here. ContextOS will automatically index and verify it for future searches..."
-                    className="w-full h-56 bg-white dark:bg-[#1a1c22]/50 border-2 border-slate-200 dark:border-white/10 rounded-2xl p-5 text-slate-800 dark:text-slate-100 focus:outline-none focus:border-[#8250f2] focus:ring-4 focus:ring-purple-500/10 resize-none font-medium text-lg placeholder-slate-400 dark:placeholder-slate-500 shadow-inner dark:shadow-none"
-                  ></textarea>
-                </div>
+              {/* F-06: Decision DNA form — shown when ⚡ Decision is selected */}
+              {uploadSource === 'decision' ? (
+                <div className="space-y-5 relative z-10">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-2xl">⚡</span>
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-white">Decision DNA</h3>
+                  </div>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 -mt-3 mb-4">Permanent, structured decision record — searchable forever.</p>
 
-                <div className="pt-2">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-900 dark:text-white mb-1">Decision Title *</label>
+                    <input type="text" value={decisionTitle} onChange={e => setDecisionTitle(e.target.value)}
+                      placeholder="e.g. Switch from AWS to Railway"
+                      className="w-full bg-white dark:bg-[#1a1c22]/50 border-2 border-slate-200 dark:border-white/10 rounded-xl p-3 text-slate-800 dark:text-slate-100 focus:outline-none focus:border-[#ED1C24] focus:ring-4 focus:ring-red-500/10 font-medium placeholder-slate-400"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-900 dark:text-white mb-1">What was decided *</label>
+                    <textarea value={decisionWhat} onChange={e => setDecisionWhat(e.target.value)} rows={3}
+                      placeholder="What outcome was decided..."
+                      className="w-full bg-white dark:bg-[#1a1c22]/50 border-2 border-slate-200 dark:border-white/10 rounded-xl p-3 text-slate-800 dark:text-slate-100 focus:outline-none focus:border-[#ED1C24] focus:ring-4 focus:ring-red-500/10 resize-none font-medium placeholder-slate-400"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-900 dark:text-white mb-1">Why this decision was made</label>
+                    <textarea value={decisionWhy} onChange={e => setDecisionWhy(e.target.value)} rows={3}
+                      placeholder="Reasoning, context, data points..."
+                      className="w-full bg-white dark:bg-[#1a1c22]/50 border-2 border-slate-200 dark:border-white/10 rounded-xl p-3 text-slate-800 dark:text-slate-100 focus:outline-none focus:border-[#ED1C24] focus:ring-4 focus:ring-red-500/10 resize-none font-medium placeholder-slate-400"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-900 dark:text-white mb-1">What was rejected / alternatives considered</label>
+                    <textarea value={decisionRejected} onChange={e => setDecisionRejected(e.target.value)} rows={2}
+                      placeholder="Options that were considered but not chosen..."
+                      className="w-full bg-white dark:bg-[#1a1c22]/50 border-2 border-slate-200 dark:border-white/10 rounded-xl p-3 text-slate-800 dark:text-slate-100 focus:outline-none focus:border-[#ED1C24] focus:ring-4 focus:ring-red-500/10 resize-none font-medium placeholder-slate-400"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-900 dark:text-white mb-1">Who decided</label>
+                      <input type="text" value={decisionWho} onChange={e => setDecisionWho(e.target.value)}
+                        placeholder="Name(s)"
+                        className="w-full bg-white dark:bg-[#1a1c22]/50 border-2 border-slate-200 dark:border-white/10 rounded-xl p-3 text-slate-800 dark:text-slate-100 focus:outline-none focus:border-[#ED1C24] focus:ring-4 focus:ring-red-500/10 font-medium placeholder-slate-400"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-900 dark:text-white mb-1">Date</label>
+                      <input type="date" value={decisionDate} onChange={e => setDecisionDate(e.target.value)}
+                        className="w-full bg-white dark:bg-[#1a1c22]/50 border-2 border-slate-200 dark:border-white/10 rounded-xl p-3 text-slate-800 dark:text-slate-100 focus:outline-none focus:border-[#ED1C24] focus:ring-4 focus:ring-red-500/10 font-medium"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-900 dark:text-white mb-1">Tags (comma-separated)</label>
+                    <input type="text" value={decisionTags} onChange={e => setDecisionTags(e.target.value)}
+                      placeholder="e.g. infrastructure, cost, tech"
+                      className="w-full bg-white dark:bg-[#1a1c22]/50 border-2 border-slate-200 dark:border-white/10 rounded-xl p-3 text-slate-800 dark:text-slate-100 focus:outline-none focus:border-[#ED1C24] focus:ring-4 focus:ring-red-500/10 font-medium placeholder-slate-400"
+                    />
+                  </div>
+
                   <button
-                    onClick={handleUpload}
-                    disabled={uploading || !uploadContent}
-                    className="w-full bg-[#8250f2] hover:bg-[#7245d6] text-white font-bold text-lg py-4 rounded-xl shadow-xl shadow-purple-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    onClick={handleDecisionSubmit}
+                    disabled={uploading || !decisionTitle.trim() || !decisionWhat.trim()}
+                    className="w-full bg-[#ED1C24] hover:bg-[#d41920] text-white font-bold text-lg py-4 rounded-xl shadow-xl shadow-red-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {uploading ? (
-                      <><div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> Vectorizing...</>
+                      <><div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> Storing Decision...</>
                     ) : (
-                      <><UploadCloud className="w-5 h-5" /> Commit to Memory</>
+                      <>Commit Decision to Memory ⚡</>
                     )}
                   </button>
-                </div>
 
-                {uploadMessage && (
-                  <div className="animate-pop-in mt-4 flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
-                    <p className="font-semibold">{uploadMessage}</p>
+                  {decisionMsg && (
+                    <div className={`animate-pop-in mt-4 flex items-center gap-3 p-4 rounded-xl ${decisionMsg.includes('Failed') ? 'bg-red-50 border border-red-200 text-red-700' : 'bg-emerald-50 border border-emerald-200 text-emerald-700'}`}>
+                      <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
+                      <p className="font-semibold text-sm">{decisionMsg}</p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                /* Generic text upload for other types */
+                <div className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-900 dark:text-white mb-2">Paste Content</label>
+                    <textarea
+                      value={uploadContent}
+                      onChange={(e) => setUploadContent(e.target.value)}
+                      placeholder="Paste the raw text of the document or notes here. ContextOS will automatically index and verify it for future searches..."
+                      className="w-full h-56 bg-white dark:bg-[#1a1c22]/50 border-2 border-slate-200 dark:border-white/10 rounded-2xl p-5 text-slate-800 dark:text-slate-100 focus:outline-none focus:border-[#8250f2] focus:ring-4 focus:ring-purple-500/10 resize-none font-medium text-lg placeholder-slate-400 dark:placeholder-slate-500 shadow-inner dark:shadow-none"
+                    ></textarea>
                   </div>
-                )}
-              </div>
+
+                  <div className="pt-2">
+                    <button
+                      onClick={handleUpload}
+                      disabled={uploading || !uploadContent}
+                      className="w-full bg-[#8250f2] hover:bg-[#7245d6] text-white font-bold text-lg py-4 rounded-xl shadow-xl shadow-purple-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      {uploading ? (
+                        <><div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> Vectorizing...</>
+                      ) : (
+                        <><UploadCloud className="w-5 h-5" /> Commit to Memory</>
+                      )}
+                    </button>
+                  </div>
+
+                  {uploadMessage && (
+                    <div className="animate-pop-in mt-4 flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl">
+                      <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
+                      <p className="font-semibold">{uploadMessage}</p>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -393,8 +755,16 @@ function App() {
         {activeTab === 'dashboard' && (
           <div className="animate-slide-up max-w-[1400px] mx-auto mt-4 pb-12 px-6">
             {/* AMD Status Card — full width, first element */}
-            <div className="mb-6">
-              <AmdStatusCard />
+            <div className="mb-6 flex flex-col sm:flex-row items-start gap-4">
+              <div className="flex-1 w-full">
+                <AmdStatusCard />
+              </div>
+              <button
+                onClick={setupOnboarding}
+                className="shrink-0 px-5 py-3 rounded-xl bg-[#6EE7C3]/10 border border-[#6EE7C3]/25 text-[#6EE7C3] text-sm font-bold hover:bg-[#6EE7C3]/20 transition-all flex items-center gap-2 mt-2 sm:mt-0"
+              >
+                <Zap className="w-4 h-4" /> Run Onboarding Setup
+              </button>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
