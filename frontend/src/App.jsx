@@ -637,11 +637,11 @@ function App() {
             </div>
           </div>
 
-          <div className="hidden md:flex items-center justify-center gap-1">
-            <button onClick={() => setActiveTab('dashboard')} className={`px-3 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'dashboard' ? 'bg-slate-900 dark:bg-slate-800 text-white font-medium' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white'}`}>Dashboard</button>
-            <button onClick={() => setActiveTab('search')} className={`px-3 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'search' ? 'bg-slate-900 dark:bg-slate-800 text-white font-medium' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white'}`}>Tasks & Search</button>
-            <button onClick={() => setActiveTab('upload')} className={`px-3 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'upload' ? 'bg-slate-900 dark:bg-slate-800 text-white font-medium' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white'}`}>Analytics</button>
-            <button onClick={() => setActiveTab('dpdp')} className={`px-3 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'dpdp' ? 'bg-slate-900 dark:bg-slate-800 text-[#6EE7C3] font-medium' : 'text-[#6EE7C3] hover:text-[#6EE7C3]/80'}`}>DPDP Act ✓</button>
+          <div className="hidden md:flex items-center justify-center gap-1 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md border border-slate-200/50 dark:border-slate-700/50 p-1 rounded-full shadow-sm">
+            <button onClick={() => setActiveTab('dashboard')} className={`px-4 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'dashboard' ? 'bg-slate-900 dark:bg-slate-800 text-white font-medium shadow-sm' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'}`}>Dashboard</button>
+            <button onClick={() => setActiveTab('search')} className={`px-4 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'search' ? 'bg-slate-900 dark:bg-slate-800 text-white font-medium shadow-sm' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'}`}>Tasks & Search</button>
+            <button onClick={() => setActiveTab('upload')} className={`px-4 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'upload' ? 'bg-slate-900 dark:bg-slate-800 text-white font-medium shadow-sm' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'}`}>Analytics</button>
+            <button onClick={() => setActiveTab('dpdp')} className={`px-4 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'dpdp' ? 'bg-slate-900 dark:bg-slate-800 text-[#6EE7C3] font-medium shadow-sm' : 'text-[#6EE7C3] hover:text-[#6EE7C3]/80 hover:bg-black/5 dark:hover:bg-white/5'}`}>DPDP Act ✓</button>
           </div>
 
           <div className="flex items-center justify-end gap-2 sm:gap-3">
