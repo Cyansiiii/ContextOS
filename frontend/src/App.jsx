@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react'
 import axios from 'axios'
-import AuthPage from './AuthPage'
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler"
 import { BorderBeam } from "@/components/ui/border-beam"
 import {
@@ -10,9 +9,14 @@ import {
   Bell, Clock, ArrowUpRight, Plus, MoreHorizontal, Video, FileText, CheckCircle, Github,
   UserRound, Save, LogOut, ChevronDown, Mail, CalendarDays, CreditCard, BarChart3, Cpu
 } from 'lucide-react'
-import ErrorCard from './components/ErrorCard'
-import { LineShadowText } from './components/core/line-shadow-text'
 
+const AuthPage = lazy(() => import('./AuthPage'))
+const ErrorCard = lazy(() => import('./components/ErrorCard'))
+const LineShadowText = lazy(() =>
+  import('./components/core/line-shadow-text').then((module) => ({
+    default: module.LineShadowText,
+  }))
+)
 const Integrations = lazy(() => import('./Integrations'))
 const Pricing = lazy(() => import('./Pricing'))
 const GmailCard = lazy(() => import('./components/GmailCard'))
@@ -24,12 +28,12 @@ const ActivityChart = lazy(() => import('./components/ActivityChart'))
 
 // MOCK DATA for floating bubbles to simulate Guru homepage
 const FLOATING_CHATS = [
-  { text: "What's our current security review process?", type: "q", user: "dev", delay: "delay-0", pos: "top-20 -left-12 lg:-left-32" },
-  { text: "Standard timeframe is 3-5 business days requiring Approval.", type: "a", icon: <CheckCircle2 className="w-4 h-4 text-emerald-500" />, delay: "delay-[2000ms]", pos: "top-36 left-0 lg:-left-12" },
-  { text: "Did we update the Stripe payment API?", type: "q", user: "pm", delay: "delay-1000", pos: "bottom-40 -left-8 lg:-left-24" },
-  { text: "Yes—Stripe integration was just updated to support passkey.", type: "a", icon: <ShieldCheck className="w-4 h-4 text-emerald-500" />, delay: "delay-[3000ms]", pos: "bottom-20 left-4 lg:-left-8" },
-  { text: "Who leads the Acme Corp renewal?", type: "q", user: "sales", delay: "delay-500", pos: "top-16 -right-12 lg:-right-32" },
-  { text: "Priya is the lead for Acme Corp.", type: "a", icon: <CheckCircle2 className="w-4 h-4 text-emerald-500" />, delay: "delay-[2500ms]", pos: "top-32 right-0 lg:-right-12" },
+  { text: "What's our current security review process?", type: "q", user: "dev", delayMs: 0, pos: "top-20 -left-12 lg:-left-32" },
+  { text: "Standard timeframe is 3-5 business days requiring Approval.", type: "a", icon: <CheckCircle2 className="w-4 h-4 text-emerald-500" />, delayMs: 2000, pos: "top-36 left-0 lg:-left-12" },
+  { text: "Did we update the Stripe payment API?", type: "q", user: "pm", delayMs: 1000, pos: "bottom-40 -left-8 lg:-left-24" },
+  { text: "Yes—Stripe integration was just updated to support passkey.", type: "a", icon: <ShieldCheck className="w-4 h-4 text-emerald-500" />, delayMs: 3000, pos: "bottom-20 left-4 lg:-left-8" },
+  { text: "Who leads the Acme Corp renewal?", type: "q", user: "sales", delayMs: 500, pos: "top-16 -right-12 lg:-right-32" },
+  { text: "Priya is the lead for Acme Corp.", type: "a", icon: <CheckCircle2 className="w-4 h-4 text-emerald-500" />, delayMs: 2500, pos: "top-32 right-0 lg:-right-12" },
 ]
 
 function App() {
@@ -616,7 +620,11 @@ function App() {
   )
 
   if (!currentUser) {
-    return <AuthPage onAuthenticate={handleAuthenticate} />
+    return (
+      <Suspense fallback={<div className="min-h-screen bg-[radial-gradient(circle_at_top,#fefefe_0%,#e6f0ec_40%,#d9ebe4_100%)] dark:bg-[radial-gradient(circle_at_top,#111827_0%,#0f172a_45%,#020617_100%)]" />}>
+        <AuthPage onAuthenticate={handleAuthenticate} />
+      </Suspense>
+    )
   }
 
   const cardSkeleton = 'rounded-[2rem] border border-slate-200 bg-white/80 dark:border-slate-800 dark:bg-slate-950/80 shadow-[0_18px_40px_rgba(15,23,42,0.05)] dark:shadow-none'
@@ -747,9 +755,11 @@ function App() {
                 </div>
                 <h1 className="text-[3.5rem] md:text-[5rem] font-bold leading-[1.12] tracking-tight text-slate-900 dark:text-white mb-6 overflow-visible">
                   Ready to try AI built on <br className="hidden md:block" />
-                  <LineShadowText className="text-[#182038] dark:text-white" shadowColor="rgba(124, 58, 237, 0.72)">
-                    your knowledge?
-                  </LineShadowText>
+                  <Suspense fallback={<span className="text-[#182038] dark:text-white">your knowledge?</span>}>
+                    <LineShadowText className="text-[#182038] dark:text-white" shadowColor="rgba(124, 58, 237, 0.72)">
+                      your knowledge?
+                    </LineShadowText>
+                  </Suspense>
                 </h1>
                 <p className="text-xl text-slate-600 dark:text-slate-300 font-normal mb-8 max-w-2xl mx-auto leading-loose flex flex-wrap justify-center gap-x-2 gap-y-2">
                   <span className="rounded-md bg-amber-200/80 px-1.5 py-0.5 font-semibold text-slate-800 dark:bg-amber-600/30 dark:text-white">Ask, chat, and research</span>
@@ -899,14 +909,16 @@ function App() {
               {/* F-15: Error display */}
               {errorData && !isThinking && (
                 <div className="max-w-3xl mx-auto mb-4">
-                  <ErrorCard
-                    error_code={errorData.error_code}
-                    user_message={errorData.user_message}
-                    recovery_action={errorData.recovery_action}
-                    onRetry={() => { setErrorData(null); searchMode === 'expert' ? handleExpertSearch() : askQuestion() }}
-                    onDismiss={() => setErrorData(null)}
-                    onNavigate={(tab) => { setErrorData(null); setActiveTab(tab) }}
-                  />
+                  <Suspense fallback={<div className={`${cardSkeleton} h-44 animate-pulse`} />}>
+                    <ErrorCard
+                      error_code={errorData.error_code}
+                      user_message={errorData.user_message}
+                      recovery_action={errorData.recovery_action}
+                      onRetry={() => { setErrorData(null); searchMode === 'expert' ? handleExpertSearch() : askQuestion() }}
+                      onDismiss={() => setErrorData(null)}
+                      onNavigate={(tab) => { setErrorData(null); setActiveTab(tab) }}
+                    />
+                  </Suspense>
                 </div>
               )}
 
@@ -1042,7 +1054,10 @@ function App() {
                     {FLOATING_CHATS.map((chat, idx) => (
                       <div
                         key={idx}
-                        className={`absolute ${chat.pos} animate-float ${chat.delay} bg-white dark:bg-[#1a1c22] px-5 py-3 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-none border border-slate-100 dark:border-slate-800 max-w-xs flex gap-3 text-sm font-medium text-slate-700 dark:text-slate-300 float-bubble`}
+                        className={`absolute ${chat.pos} animate-float bg-white dark:bg-[#1a1c22] px-5 py-3 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-none border border-slate-100 dark:border-slate-800 max-w-xs flex gap-3 text-sm font-medium text-slate-700 dark:text-slate-300 float-bubble`}
+                        style={{
+                          animationDelay: `${chat.delayMs ?? 0}ms`,
+                        }}
                       >
                         {chat.type === "q" ? (
                           <div className="w-6 h-6 rounded-full bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 flex items-center justify-center shrink-0 text-xs">
