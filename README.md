@@ -9,10 +9,12 @@ Website -Link -https://contextos-du1q.vercel.app/
 - **Local AI Engine**: Powered by **Ollama** running `Mistral 7B` and `Nomic Embed Text`. Completely offline, ensuring zero data retention and maximum privacy.
 - **RAG Architecture**: Implements Retrieval-Augmented Generation using **LangChain** and **ChromaDB** to provide accurate, citable answers based on your data.
 - **Premium GetGuru-Inspired UI/UX**:
-  - Entirely redesigned React frontend with modern "Glassmorphism" aesthetics, floating mock chat bubbles, hover 3D card effects, and a signature mint radial gradient.
-  - Interactive *Dashboard* summarizing system statuses and AI memory usage.
-  - Smooth *Ask* Hub with a refined floating search bar and cleanly formatted markdown AI responses.
+  - Entirely redesigned React frontend with modern "Glassmorphism" aesthetics, hover 3D card effects, and seamless animations.
+  - **Dark Mode** support for a comfortable, distraction-free viewing experience.
+  - Interactive *Dashboard* summarizing system statuses, AMD benchmarks, and AI memory usage through visually rich charts.
+  - Smooth *Ask* Hub with a refined search experience and cleanly formatted markdown AI responses.
   - Interactive *Add Memory* Hub to ingest raw documents right into the Vector Database.
+  - Seamless **Pricing & Checkout** flows integrated out-of-the-box.
 - **Highly Extensible API**: Built on **FastAPI**, creating a robust backend that easily communicates with the frontend.
 
 ## 🛠️ Technology Stack
@@ -27,9 +29,10 @@ Website -Link -https://contextos-du1q.vercel.app/
 **Frontend**
 - React 18 + Vite
 - Tailwind CSS v3 (Styling & Animations)
+- Framer Motion & Lenis (Smooth fluid animations)
+- Recharts (Data Visualization)
 - Lucide React (Icons)
 - Axios (HTTP Client)
-- Google Fonts (Outfit)
 
 ## 💻 How to Run Locally
 
@@ -57,7 +60,7 @@ uvicorn main:app --reload
 ```
 *The backend API will run on `http://localhost:8000`*
 
-### 3.1 Enable Razorpay Test Checkout
+### 4. Enable Razorpay Test Checkout
 To enable real Razorpay test-mode checkout for the pricing modal:
 ```bash
 cd backend
@@ -77,7 +80,7 @@ http://localhost:8000/checkout/webhook
 ```
 and use the same `RAZORPAY_WEBHOOK_SECRET` value from `backend/.env`.
 
-### 3.5 Load Demo Data (Important!)
+### 5. Load Demo Data (Important!)
 With the backend running, open a new terminal and run:
 ` ` `bash
 cd backend
@@ -86,7 +89,7 @@ python demo_data.py
 ` ` `
 This pre-loads 15 realistic company memories so ContextOS can answer questions immediately.
 
-### 4. Start the Frontend App (React/Vite)
+### 6. Start the Frontend App (React/Vite)
 Open a new terminal session, navigate to the `frontend` folder, install JS dependencies, and start the Vite dev server:
 ```bash
 cd frontend

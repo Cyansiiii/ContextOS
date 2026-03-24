@@ -26,6 +26,7 @@ const DPDPPage = lazy(() => import('./pages/DPDPPage'))
 const CurvedLoop = lazy(() => import('./components/core/CurvedLoop'))
 const ActivityChart = lazy(() => import('./components/ActivityChart'))
 const DashboardPage = lazy(() => import('./components/dashboard/DashboardPage'))
+const AnalyticsPage = lazy(() => import('./pages/AnalyticsPage'))
 
 // MOCK DATA for floating bubbles to simulate Guru homepage
 const FLOATING_CHATS = [
@@ -40,11 +41,11 @@ const FLOATING_CHATS = [
 function App() {
   const API = import.meta.env.VITE_API_URL || 'http://localhost:8000'
   const [currentUser, setCurrentUser] = useState(() => {
-    try {
-      const storedUser = window.localStorage.getItem('contextos-user')
-      return storedUser ? JSON.parse(storedUser) : null
-    } catch {
-      return null
+    return {
+      id: 'local_dev_user',
+      name: 'Team Workspace',
+      email: 'team@contextos.ai',
+      created_at: new Date('2024-01-01').toISOString(),
     }
   })
 
@@ -309,7 +310,7 @@ function App() {
   }
 
   const handleLogout = () => {
-    setCurrentUser(null)
+    // setCurrentUser(null)
     setQuestion('')
     setAnswer('')
     setSources([])
@@ -621,11 +622,7 @@ function App() {
   )
 
   if (!currentUser) {
-    return (
-      <Suspense fallback={<div className="min-h-screen bg-[radial-gradient(circle_at_top,#fefefe_0%,#e6f0ec_40%,#d9ebe4_100%)] dark:bg-[radial-gradient(circle_at_top,#111827_0%,#0f172a_45%,#020617_100%)]" />}>
-        <AuthPage onAuthenticate={handleAuthenticate} />
-      </Suspense>
-    )
+    return <div className="min-h-screen bg-slate-900" />
   }
 
   const cardSkeleton = 'rounded-[2rem] border border-slate-200 bg-white/80 dark:border-slate-800 dark:bg-slate-950/80 shadow-[0_18px_40px_rgba(15,23,42,0.05)] dark:shadow-none'
@@ -633,7 +630,8 @@ function App() {
   return (
     <div className="min-h-screen text-slate-800 dark:text-slate-200 selection:bg-purple-200 overflow-x-hidden relative hero-gradient">
 
-      {/* FIXED NAVBAR */}
+      {/* FLOATING TOP NAVIGATION */}
+      {activeTab !== 'analytics' && (
       <nav className="fixed top-0 left-0 right-0 z-50 glass-nav transition-all duration-300 h-14 flex items-center">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between w-full h-full">
           <div className="flex justify-start items-center">
@@ -649,7 +647,8 @@ function App() {
           <div className="hidden md:flex items-center justify-center gap-1 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md border border-slate-200/50 dark:border-slate-700/50 p-1 rounded-full shadow-sm">
             <button onClick={() => setActiveTab('dashboard')} className={`px-4 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'dashboard' ? 'bg-slate-900 dark:bg-slate-800 text-white font-medium shadow-sm' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'}`}>Dashboard</button>
             <button onClick={() => setActiveTab('search')} className={`px-4 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'search' ? 'bg-slate-900 dark:bg-slate-800 text-white font-medium shadow-sm' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'}`}>Tasks & Search</button>
-            <button onClick={() => setActiveTab('upload')} className={`px-4 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'upload' ? 'bg-slate-900 dark:bg-slate-800 text-white font-medium shadow-sm' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'}`}>Analytics</button>
+            <button onClick={() => setActiveTab('upload')} className={`px-4 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'upload' ? 'bg-slate-900 dark:bg-slate-800 text-white font-medium shadow-sm' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'}`}>Memory Hub</button>
+            <button onClick={() => setActiveTab('analytics')} className={`px-4 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'analytics' ? 'bg-slate-900 dark:bg-slate-800 text-white font-medium shadow-sm' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'}`}>Analytics</button>
             <button onClick={() => setActiveTab('dpdp')} className={`px-4 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'dpdp' ? 'bg-slate-900 dark:bg-slate-800 text-[#6EE7C3] font-medium shadow-sm' : 'text-[#6EE7C3] hover:text-[#6EE7C3]/80 hover:bg-black/5 dark:hover:bg-white/5'}`}>DPDP Act ✓</button>
           </div>
 
@@ -715,19 +714,20 @@ function App() {
         {mobileMenuOpen && (
           <div className="md:hidden absolute top-full left-0 right-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200/50 dark:border-slate-700/50 shadow-xl animate-slide-up">
             <div className="flex flex-col p-4 gap-2">
-              {['dashboard', 'search', 'upload', 'dpdp'].map(tab => (
+              {['dashboard', 'search', 'upload', 'analytics', 'dpdp'].map(tab => (
                 <button key={tab} onClick={() => { setActiveTab(tab); setMobileMenuOpen(false) }}
                   className={`w-full text-left px-5 py-3 rounded-xl text-sm font-semibold transition-all min-h-[44px] ${activeTab === tab ? 'bg-[#212121] text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}`}>
-                  {tab === 'dashboard' ? 'Dashboard' : tab === 'search' ? 'Tasks & Search' : tab === 'dpdp' ? 'DPDP Act ✓' : 'Analytics'}
+                  {tab === 'dashboard' ? 'Dashboard' : tab === 'search' ? 'Tasks & Search' : tab === 'upload' ? 'Memory Hub' : tab === 'analytics' ? 'Analytics' : 'DPDP Act ✓'}
                 </button>
               ))}
             </div>
           </div>
         )}
       </nav>
+      )}
 
       {/* MAIN CONTENT AREA */}
-      <main className="pt-32 pb-24 relative z-10 min-h-screen">
+      <main className={`${activeTab === 'analytics' ? '' : 'pt-32 pb-24'} relative z-10 min-h-screen`}>
 
         {/* --- SEARCH / HOME VIEW --- */}
         {activeTab === 'search' && (
@@ -1288,6 +1288,15 @@ function App() {
           </div>
         )}
 
+        {/* --- ANALYTICS PAGE --- */}
+        {activeTab === 'analytics' && (
+          <div className="animate-slide-up w-full">
+            <Suspense fallback={<div className="max-w-7xl mx-auto p-8"><div className="h-[60vh] rounded-xl bg-slate-100 dark:bg-slate-900 animate-pulse" /></div>}>
+              <AnalyticsPage onNavigateToChat={() => setActiveTab('search')} />
+            </Suspense>
+          </div>
+        )}
+
         {/* --- F-19: DPDP COMPLIANCE PAGE --- */}
         {activeTab === 'dpdp' && (
           <div className="animate-slide-up w-full px-4 relative z-20">
@@ -1304,6 +1313,7 @@ function App() {
         </div>
       ) : null}
 
+      {activeTab !== 'analytics' && (
       <footer className="border-t border-slate-200 bg-white/80 px-4 py-5 text-sm text-slate-600 backdrop-blur dark:border-slate-800 dark:bg-slate-950/85 dark:text-slate-300">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 md:flex-row">
           <div className="flex flex-wrap items-center justify-center gap-3">
@@ -1318,6 +1328,7 @@ function App() {
           </div>
         </div>
       </footer>
+      )}
 
       {profileOpen && (
         <div data-lenis-prevent className="fixed inset-0 z-[80] overflow-y-auto bg-slate-950/55 px-4 py-6 backdrop-blur-sm">
