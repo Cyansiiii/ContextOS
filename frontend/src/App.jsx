@@ -747,8 +747,14 @@ function App() {
   return (
     <div className="min-h-screen text-slate-800 dark:text-slate-200 selection:bg-purple-200 overflow-x-hidden relative hero-gradient">
 
-      {/* FLOATING TOP NAVIGATION */}
-      {activeTab !== 'analytics' && (
+<<<<<<< HEAD
+  {/* FLOATING TOP NAVIGATION */ }
+  {
+    activeTab !== 'analytics' && (
+=======
+      {/* FIXED NAVBAR */}
+      {activeTab !== 'upload' && (
+>>>>>>> b434a7f42059f768774bb556965892361d068111
       <nav className="fixed top-0 left-0 right-0 z-50 glass-nav transition-all duration-300 h-14 flex items-center">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between w-full h-full">
           <div className="flex justify-start items-center">
@@ -761,12 +767,20 @@ function App() {
             </div>
           </div>
 
-          <div className="hidden md:flex items-center justify-center gap-1 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md border border-slate-200/50 dark:border-slate-700/50 p-1 rounded-full shadow-sm">
-            <button onClick={() => setActiveTab('dashboard')} className={`px-4 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'dashboard' ? 'bg-slate-900 dark:bg-slate-800 text-white font-medium shadow-sm' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'}`}>Dashboard</button>
-            <button onClick={() => setActiveTab('search')} className={`px-4 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'search' ? 'bg-slate-900 dark:bg-slate-800 text-white font-medium shadow-sm' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'}`}>Tasks & Search</button>
-            <button onClick={() => setActiveTab('upload')} className={`px-4 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'upload' ? 'bg-slate-900 dark:bg-slate-800 text-white font-medium shadow-sm' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'}`}>Memory Hub</button>
-            <button onClick={() => setActiveTab('analytics')} className={`px-4 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'analytics' ? 'bg-slate-900 dark:bg-slate-800 text-white font-medium shadow-sm' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'}`}>Analytics</button>
-            <button onClick={() => setActiveTab('dpdp')} className={`px-4 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'dpdp' ? 'bg-slate-900 dark:bg-slate-800 text-[#6EE7C3] font-medium shadow-sm' : 'text-[#6EE7C3] hover:text-[#6EE7C3]/80 hover:bg-black/5 dark:hover:bg-white/5'}`}>DPDP Act ✓</button>
+<<<<<<< HEAD
+    <div className="hidden md:flex items-center justify-center gap-1 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md border border-slate-200/50 dark:border-slate-700/50 p-1 rounded-full shadow-sm">
+      <button onClick={() => setActiveTab('dashboard')} className={`px-4 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'dashboard' ? 'bg-slate-900 dark:bg-slate-800 text-white font-medium shadow-sm' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'}`}>Dashboard</button>
+      <button onClick={() => setActiveTab('search')} className={`px-4 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'search' ? 'bg-slate-900 dark:bg-slate-800 text-white font-medium shadow-sm' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'}`}>Tasks & Search</button>
+      <button onClick={() => setActiveTab('upload')} className={`px-4 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'upload' ? 'bg-slate-900 dark:bg-slate-800 text-white font-medium shadow-sm' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'}`}>Memory Hub</button>
+      <button onClick={() => setActiveTab('analytics')} className={`px-4 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'analytics' ? 'bg-slate-900 dark:bg-slate-800 text-white font-medium shadow-sm' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'}`}>Analytics</button>
+      <button onClick={() => setActiveTab('dpdp')} className={`px-4 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'dpdp' ? 'bg-slate-900 dark:bg-slate-800 text-[#6EE7C3] font-medium shadow-sm' : 'text-[#6EE7C3] hover:text-[#6EE7C3]/80 hover:bg-black/5 dark:hover:bg-white/5'}`}>DPDP Act ✓</button>
+=======
+          <div className="hidden md:flex items-center justify-center gap-1">
+        <button onClick={() => setActiveTab('dashboard')} className={`px-3 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'dashboard' ? 'bg-slate-900 dark:bg-slate-800 text-white font-medium' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white'}`}>Dashboard</button>
+        <button onClick={() => setActiveTab('search')} className={`px-3 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'search' ? 'bg-slate-900 dark:bg-slate-800 text-white font-medium' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white'}`}>Tasks & Search</button>
+        <button onClick={() => setActiveTab('upload')} className={`px-3 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'upload' ? 'bg-slate-900 dark:bg-slate-800 text-white font-medium' : 'text-slate-500 hover:text-slate-800 dark:hover:text-white'}`}>Memory Hub</button>
+        <button onClick={() => setActiveTab('dpdp')} className={`px-3 py-1.5 rounded-full text-[13px] transition-all ${activeTab === 'dpdp' ? 'bg-slate-900 dark:bg-slate-800 text-[#6EE7C3] font-medium' : 'text-[#6EE7C3] hover:text-[#6EE7C3]/80'}`}>DPDP Act ✓</button>
+>>>>>>> b434a7f42059f768774bb556965892361d068111
       </div>
 
       <div className="flex items-center justify-end gap-2 sm:gap-3">
@@ -848,18 +862,19 @@ function App() {
             {['dashboard', 'search', 'upload', 'analytics', 'dpdp'].map(tab => (
               <button key={tab} onClick={() => { setActiveTab(tab); setMobileMenuOpen(false) }}
                 className={`w-full text-left px-5 py-3 rounded-xl text-sm font-semibold transition-all min-h-[44px] ${activeTab === tab ? 'bg-[#212121] text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}`}>
-                { tab === 'dashboard' ? 'Dashboard' : tab === 'search' ? 'Tasks & Search' : tab === 'upload' ? 'Memory Hub' : tab === 'analytics' ? 'Analytics' : 'DPDP Act ✓' }
+                {tab === 'dashboard' ? 'Dashboard' : tab === 'search' ? 'Tasks & Search' : tab === 'upload' ? 'Memory Hub' : tab === 'analytics' ? 'Analytics' : 'DPDP Act ✓'}
               </button>
             ))}
           </div>
         </div>
-      )}
-    </nav>
+      )
+    }
+    </nav >
   )
-}
+  }
 
-{/* MAIN CONTENT AREA */}
-<main className={`${activeTab === 'analytics' || activeTab === 'upload' ? 'pt-0 pb-0' : 'pt-32 pb-24'} relative z-10 min-h-screen`}>
+  {/* MAIN CONTENT AREA */ }
+  <main className={`${activeTab === 'analytics' || activeTab === 'upload' ? 'pt-0 pb-0' : 'pt-32 pb-24'} relative z-10 min-h-screen`}>
 
     {/* --- SEARCH / HOME VIEW --- */}
     {activeTab === 'search' && (
@@ -1080,8 +1095,8 @@ function App() {
                           </div>
                           <span className="text-lg font-bold text-slate-900 dark:text-white">{expert.name}</span>
                           <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${expert.confidence === 'High' ? 'bg-[#6EE7C3]/10 text-[#6EE7C3] border-[#6EE7C3]/25' :
-                              expert.confidence === 'Medium' ? 'bg-amber-500/10 text-amber-500 border-amber-500/25' :
-                                'bg-red-500/10 text-red-500 border-red-500/25'
+                            expert.confidence === 'Medium' ? 'bg-amber-500/10 text-amber-500 border-amber-500/25' :
+                              'bg-red-500/10 text-red-500 border-red-500/25'
                             }`}>{expert.confidence}</span>
                           <span className="text-xs text-slate-500">{expert.evidence_count} documents</span>
                         </div>
@@ -1161,8 +1176,8 @@ function App() {
                 <div className="pl-14 mt-5 flex flex-wrap items-center gap-3 relative z-10 text-sm">
                   {confidence && (
                     <span className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold border ${confidence === 'High' ? 'bg-[#6EE7C3]/10 text-[#6EE7C3] border-[#6EE7C3]/25' :
-                        confidence === 'Medium' ? 'bg-amber-500/10 text-amber-500 border-amber-500/25' :
-                          'bg-red-500/10 text-red-500 border-red-500/25'
+                      confidence === 'Medium' ? 'bg-amber-500/10 text-amber-500 border-amber-500/25' :
+                        'bg-red-500/10 text-red-500 border-red-500/25'
                       }`}>
                       <CheckCircle className="w-3 h-3" /> Confidence: {confidence}
                     </span>
@@ -1979,418 +1994,420 @@ function App() {
       </div>
     )}
 
-{/* --- ANALYTICS PAGE --- */}
-{activeTab === 'analytics' && (
-  <div className="animate-slide-up w-full">
-    <Suspense fallback={<div className="max-w-7xl mx-auto p-8"><div className="h-[60vh] rounded-xl bg-slate-100 dark:bg-slate-900 animate-pulse" /></div>}>
-      <AnalyticsPage onNavigateToChat={() => setActiveTab('search')} />
-    </Suspense>
-  </div>
-)}
-
-{/* --- F-19: DPDP COMPLIANCE PAGE --- */ }
-{
-  activeTab === 'dpdp' && (
-    <div className="animate-slide-up w-full px-4 relative z-20">
-      <Suspense fallback={<div className="mx-auto max-w-6xl px-6"><div className={`${cardSkeleton} h-[60vh] animate-pulse`} /></div>}>
-        <DPDPPage activeTab={activeTab} setActiveTab={setActiveTab} />
-      </Suspense>
-    </div>
-  )
-}
-      </main >
-
-{
-  appNotice?(
-        <div className = "fixed bottom-4 left-1/2 z-[95] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-2xl dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200" >
-      { appNotice }
-        </div>
-      ) : null}
-
-{
-  uploadMessage ? (
-    <div className="fixed right-4 top-20 z-[90] max-w-sm rounded-2xl border border-emerald-200 bg-white px-4 py-3 text-sm font-semibold text-emerald-700 shadow-2xl dark:border-emerald-500/20 dark:bg-slate-950 dark:text-emerald-300">
-      {uploadMessage}
-    </div>
-  ) : null
-}
-
-{
-  activeTab !== 'analytics' && (
-    <footer className="border-t border-slate-200 bg-white/80 px-4 py-5 text-sm text-slate-600 backdrop-blur dark:border-slate-800 dark:bg-slate-950/85 dark:text-slate-300">
-      <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 md:flex-row">
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          <button type="button" onClick={() => setActiveTab('dpdp')} className="transition-colors hover:text-[#ED1C24]">Privacy (DPDP)</button>
-          <button type="button" onClick={scrollToPricing} className="transition-colors hover:text-[#ED1C24]">Pricing</button>
-          <a href="https://github.com/Cyansiiii/ContexOS" target="_blank" rel="noreferrer" className="transition-colors hover:text-[#ED1C24]">GitHub</a>
-          <a href="https://github.com/Cyansiiii/ContextOS/blob/main/DEPLOYMENT.md" target="_blank" rel="noreferrer" className="transition-colors hover:text-[#ED1C24]">Deployment Guide</a>
-        </div>
-        <div className="flex flex-wrap items-center justify-center gap-3 text-center">
-          <span className="rounded-full bg-[#ED1C24]/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-[#ED1C24]">AMD Slingshot 2026</span>
-          <span className="font-medium">Made in India 🇮🇳</span>
-        </div>
+    {/* --- ANALYTICS PAGE --- */}
+    {activeTab === 'analytics' && (
+      <div className="animate-slide-up w-full">
+        <Suspense fallback={<div className="max-w-7xl mx-auto p-8"><div className="h-[60vh] rounded-xl bg-slate-100 dark:bg-slate-900 animate-pulse" /></div>}>
+          <AnalyticsPage onNavigateToChat={() => setActiveTab('search')} />
+        </Suspense>
       </div>
-    </footer>
-  )
-}
+    )}
 
-{
-  profileOpen && (
-    <div data-lenis-prevent className="fixed inset-0 z-[80] overflow-y-auto bg-slate-950/55 px-4 py-6 backdrop-blur-sm">
-      <div className="mx-auto w-full max-w-7xl rounded-[2rem] border border-slate-200/80 bg-[#f7f8fb] p-4 shadow-2xl dark:border-slate-800 dark:bg-[#090d14] sm:p-6">
-        <div className="mb-6 flex items-start justify-between gap-4 border-b border-slate-200/80 pb-5 dark:border-slate-800">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-[#efe9ff] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#6d42d8] dark:bg-[#6d42d8]/10 dark:text-[#c8b8ff]">
-              Professional Profile
-            </div>
-            <h2 className="mt-3 text-3xl font-bold tracking-[-0.04em] text-slate-900 dark:text-white">ContextOS operator dashboard</h2>
-            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-              Live account details, workspace performance, activity trail, and profile controls in one place.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setProfileOpen(false)}
-            className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition-colors hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300 dark:hover:bg-slate-900"
-          >
-            <X className="h-4 w-4" />
-          </button>
+    {/* --- F-19: DPDP COMPLIANCE PAGE --- */}
+    {
+      activeTab === 'dpdp' && (
+        <div className="animate-slide-up w-full px-4 relative z-20">
+          <Suspense fallback={<div className="mx-auto max-w-6xl px-6"><div className={`${cardSkeleton} h-[60vh] animate-pulse`} /></div>}>
+            <DPDPPage activeTab={activeTab} setActiveTab={setActiveTab} />
+          </Suspense>
         </div>
+      )
+    }
+  </main >
 
-        <div className="grid gap-6 xl:grid-cols-[340px_minmax(0,1fr)]">
-          <div className="space-y-6">
-            <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_20px_50px_rgba(15,23,42,0.08)] dark:border-slate-800 dark:bg-slate-950">
-              <div className="relative overflow-hidden bg-gradient-to-br from-[#6d42d8] via-[#8f6cff] to-[#5ac8a5] px-6 pb-8 pt-6 text-white">
-                <div className="absolute right-[-48px] top-[-36px] h-36 w-36 rounded-full bg-white/10 blur-2xl" />
-                <div className="absolute left-[-24px] bottom-[-54px] h-32 w-32 rounded-full bg-black/10 blur-2xl" />
-                <div className="relative flex items-start justify-between gap-4">
-                  <div className="flex items-center gap-4">
-                    <div className="relative">
-                      {renderAvatar('h-16 w-16 rounded-[20px] border border-white/20 bg-white/18 text-2xl font-black backdrop-blur', 'text-2xl')}
+  {
+    appNotice ? (
+      <div className="fixed bottom-4 left-1/2 z-[95] w-[calc(100%-2rem)] max-w-md -translate-x-1/2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-2xl dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200" >
+        {appNotice}
+      </div>
+    ) : null
+  }
+
+  {
+    uploadMessage ? (
+      <div className="fixed right-4 top-20 z-[90] max-w-sm rounded-2xl border border-emerald-200 bg-white px-4 py-3 text-sm font-semibold text-emerald-700 shadow-2xl dark:border-emerald-500/20 dark:bg-slate-950 dark:text-emerald-300">
+        {uploadMessage}
+      </div>
+    ) : null
+  }
+
+  {
+    activeTab !== 'analytics' && (
+      <footer className="border-t border-slate-200 bg-white/80 px-4 py-5 text-sm text-slate-600 backdrop-blur dark:border-slate-800 dark:bg-slate-950/85 dark:text-slate-300">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 md:flex-row">
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <button type="button" onClick={() => setActiveTab('dpdp')} className="transition-colors hover:text-[#ED1C24]">Privacy (DPDP)</button>
+            <button type="button" onClick={scrollToPricing} className="transition-colors hover:text-[#ED1C24]">Pricing</button>
+            <a href="https://github.com/Cyansiiii/ContexOS" target="_blank" rel="noreferrer" className="transition-colors hover:text-[#ED1C24]">GitHub</a>
+            <a href="https://github.com/Cyansiiii/ContextOS/blob/main/DEPLOYMENT.md" target="_blank" rel="noreferrer" className="transition-colors hover:text-[#ED1C24]">Deployment Guide</a>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-3 text-center">
+            <span className="rounded-full bg-[#ED1C24]/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-[#ED1C24]">AMD Slingshot 2026</span>
+            <span className="font-medium">Made in India 🇮🇳</span>
+          </div>
+        </div>
+      </footer>
+    )
+  }
+
+  {
+    profileOpen && (
+      <div data-lenis-prevent className="fixed inset-0 z-[80] overflow-y-auto bg-slate-950/55 px-4 py-6 backdrop-blur-sm">
+        <div className="mx-auto w-full max-w-7xl rounded-[2rem] border border-slate-200/80 bg-[#f7f8fb] p-4 shadow-2xl dark:border-slate-800 dark:bg-[#090d14] sm:p-6">
+          <div className="mb-6 flex items-start justify-between gap-4 border-b border-slate-200/80 pb-5 dark:border-slate-800">
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full bg-[#efe9ff] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#6d42d8] dark:bg-[#6d42d8]/10 dark:text-[#c8b8ff]">
+                Professional Profile
+              </div>
+              <h2 className="mt-3 text-3xl font-bold tracking-[-0.04em] text-slate-900 dark:text-white">ContextOS operator dashboard</h2>
+              <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+                Live account details, workspace performance, activity trail, and profile controls in one place.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setProfileOpen(false)}
+              className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition-colors hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-300 dark:hover:bg-slate-900"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+
+          <div className="grid gap-6 xl:grid-cols-[340px_minmax(0,1fr)]">
+            <div className="space-y-6">
+              <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_20px_50px_rgba(15,23,42,0.08)] dark:border-slate-800 dark:bg-slate-950">
+                <div className="relative overflow-hidden bg-gradient-to-br from-[#6d42d8] via-[#8f6cff] to-[#5ac8a5] px-6 pb-8 pt-6 text-white">
+                  <div className="absolute right-[-48px] top-[-36px] h-36 w-36 rounded-full bg-white/10 blur-2xl" />
+                  <div className="absolute left-[-24px] bottom-[-54px] h-32 w-32 rounded-full bg-black/10 blur-2xl" />
+                  <div className="relative flex items-start justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                      <div className="relative">
+                        {renderAvatar('h-16 w-16 rounded-[20px] border border-white/20 bg-white/18 text-2xl font-black backdrop-blur', 'text-2xl')}
+                        <button
+                          type="button"
+                          onClick={() => avatarInputRef.current?.click()}
+                          disabled={avatarUploading}
+                          className="absolute -bottom-2 -right-2 inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-slate-950/80 text-white shadow-lg transition-colors hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+                          title="Upload profile photo"
+                        >
+                          <UploadCloud className="h-3.5 w-3.5" />
+                        </button>
+                        <input
+                          ref={avatarInputRef}
+                          type="file"
+                          accept="image/png,image/jpeg,image/webp,image/gif"
+                          className="hidden"
+                          onChange={handleAvatarUpload}
+                        />
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-bold">{currentUser.name}</h3>
+                        <p className="mt-1 text-sm text-white/80">{currentUser.email}</p>
+                        <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-white/16 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/90">
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                          Verified workspace member
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 px-6 py-5">
+                  <div className="rounded-2xl bg-slate-50 px-4 py-4 dark:bg-slate-900">
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Member since</div>
+                    <div className="mt-2 flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
+                      <CalendarDays className="h-4 w-4 text-[#6d42d8]" />
+                      {memberSince}
+                    </div>
+                  </div>
+                  <div className="rounded-2xl bg-slate-50 px-4 py-4 dark:bg-slate-900">
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Performance</div>
+                    <div className="mt-2 flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
+                      <BarChart3 className="h-4 w-4 text-emerald-500" />
+                      Grade {benchmarks?.performance_grade || 'A'}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border-t border-slate-200 px-6 py-5 dark:border-slate-800">
+                  <div className="mb-4 flex items-center justify-between">
+                    <div>
+                      <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Profile completion</div>
+                      <div className="mt-1 text-3xl font-black tracking-tight text-slate-900 dark:text-white">{completionScore}%</div>
+                    </div>
+                    <div className="relative h-20 w-20">
+                      <svg viewBox="0 0 44 44" className="h-20 w-20 -rotate-90">
+                        <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(148,163,184,0.18)" strokeWidth="4" />
+                        <circle
+                          cx="22"
+                          cy="22"
+                          r="18"
+                          fill="none"
+                          stroke="url(#profileCompletionGradient)"
+                          strokeWidth="4"
+                          strokeLinecap="round"
+                          strokeDasharray={`${completionScore} 100`}
+                          pathLength="100"
+                        />
+                        <defs>
+                          <linearGradient id="profileCompletionGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="#6d42d8" />
+                            <stop offset="100%" stopColor="#5ac8a5" />
+                          </linearGradient>
+                        </defs>
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-slate-700 dark:text-slate-200">
+                        {completionScore}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3 dark:bg-slate-900">
+                      <div className="flex items-center gap-3">
+                        <UploadCloud className="h-4 w-4 text-sky-500" />
+                        <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Profile photo</span>
+                      </div>
                       <button
                         type="button"
                         onClick={() => avatarInputRef.current?.click()}
                         disabled={avatarUploading}
-                        className="absolute -bottom-2 -right-2 inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/20 bg-slate-950/80 text-white shadow-lg transition-colors hover:bg-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
-                        title="Upload profile photo"
+                        className="text-sm font-semibold text-slate-900 transition-opacity hover:opacity-70 dark:text-white disabled:cursor-not-allowed disabled:opacity-50"
                       >
-                        <UploadCloud className="h-3.5 w-3.5" />
+                        {avatarUploading ? 'Uploading...' : avatarUrl ? 'Replace' : 'Upload'}
                       </button>
-                      <input
-                        ref={avatarInputRef}
-                        type="file"
-                        accept="image/png,image/jpeg,image/webp,image/gif"
-                        className="hidden"
-                        onChange={handleAvatarUpload}
-                      />
                     </div>
-                    <div>
-                      <h3 className="text-2xl font-bold">{currentUser.name}</h3>
-                      <p className="mt-1 text-sm text-white/80">{currentUser.email}</p>
-                      <div className="mt-3 inline-flex items-center gap-2 rounded-full bg-white/16 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/90">
-                        <CheckCircle2 className="h-3.5 w-3.5" />
-                        Verified workspace member
+                    <div className="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3 dark:bg-slate-900">
+                      <div className="flex items-center gap-3">
+                        <Mail className="h-4 w-4 text-[#6d42d8]" />
+                        <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Communication channel</span>
                       </div>
+                      <span className="text-sm font-semibold text-slate-900 dark:text-white">Email active</span>
+                    </div>
+                    <div className="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3 dark:bg-slate-900">
+                      <div className="flex items-center gap-3">
+                        <Cpu className="h-4 w-4 text-emerald-500" />
+                        <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Inference mode</span>
+                      </div>
+                      <span className="text-sm font-semibold text-slate-900 dark:text-white">Local Ollama</span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3 px-6 py-5">
-                <div className="rounded-2xl bg-slate-50 px-4 py-4 dark:bg-slate-900">
-                  <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Member since</div>
-                  <div className="mt-2 flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
-                    <CalendarDays className="h-4 w-4 text-[#6d42d8]" />
-                    {memberSince}
-                  </div>
-                </div>
-                <div className="rounded-2xl bg-slate-50 px-4 py-4 dark:bg-slate-900">
-                  <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Performance</div>
-                  <div className="mt-2 flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
-                    <BarChart3 className="h-4 w-4 text-emerald-500" />
-                    Grade {benchmarks?.performance_grade || 'A'}
-                  </div>
-                </div>
-              </div>
-
-              <div className="border-t border-slate-200 px-6 py-5 dark:border-slate-800">
+              <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_20px_50px_rgba(15,23,42,0.08)] dark:border-slate-800 dark:bg-slate-950">
                 <div className="mb-4 flex items-center justify-between">
                   <div>
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Profile completion</div>
-                    <div className="mt-1 text-3xl font-black tracking-tight text-slate-900 dark:text-white">{completionScore}%</div>
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Memory composition</div>
+                    <h3 className="mt-1 text-lg font-bold text-slate-900 dark:text-white">Workspace coverage</h3>
                   </div>
-                  <div className="relative h-20 w-20">
-                    <svg viewBox="0 0 44 44" className="h-20 w-20 -rotate-90">
-                      <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(148,163,184,0.18)" strokeWidth="4" />
-                      <circle
-                        cx="22"
-                        cy="22"
-                        r="18"
-                        fill="none"
-                        stroke="url(#profileCompletionGradient)"
-                        strokeWidth="4"
-                        strokeLinecap="round"
-                        strokeDasharray={`${completionScore} 100`}
-                        pathLength="100"
-                      />
-                      <defs>
-                        <linearGradient id="profileCompletionGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" stopColor="#6d42d8" />
-                          <stop offset="100%" stopColor="#5ac8a5" />
-                        </linearGradient>
-                      </defs>
-                    </svg>
-                    <div className="absolute inset-0 flex items-center justify-center text-xs font-bold text-slate-700 dark:text-slate-200">
-                      {completionScore}
-                    </div>
-                  </div>
+                  <Database className="h-5 w-5 text-[#6d42d8]" />
                 </div>
-
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3 dark:bg-slate-900">
-                    <div className="flex items-center gap-3">
-                      <UploadCloud className="h-4 w-4 text-sky-500" />
-                      <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Profile photo</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => avatarInputRef.current?.click()}
-                      disabled={avatarUploading}
-                      className="text-sm font-semibold text-slate-900 transition-opacity hover:opacity-70 dark:text-white disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      {avatarUploading ? 'Uploading...' : avatarUrl ? 'Replace' : 'Upload'}
-                    </button>
-                  </div>
-                  <div className="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3 dark:bg-slate-900">
-                    <div className="flex items-center gap-3">
-                      <Mail className="h-4 w-4 text-[#6d42d8]" />
-                      <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Communication channel</span>
-                    </div>
-                    <span className="text-sm font-semibold text-slate-900 dark:text-white">Email active</span>
-                  </div>
-                  <div className="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3 dark:bg-slate-900">
-                    <div className="flex items-center gap-3">
-                      <Cpu className="h-4 w-4 text-emerald-500" />
-                      <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Inference mode</span>
-                    </div>
-                    <span className="text-sm font-semibold text-slate-900 dark:text-white">Local Ollama</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_20px_50px_rgba(15,23,42,0.08)] dark:border-slate-800 dark:bg-slate-950">
-              <div className="mb-4 flex items-center justify-between">
-                <div>
-                  <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Memory composition</div>
-                  <h3 className="mt-1 text-lg font-bold text-slate-900 dark:text-white">Workspace coverage</h3>
-                </div>
-                <Database className="h-5 w-5 text-[#6d42d8]" />
-              </div>
-              <div className="space-y-3">
-                {activeMemoryTypes.length > 0 ? activeMemoryTypes.map(([type, count]) => (
-                  <div key={type}>
-                    <div className="mb-1 flex items-center justify-between text-sm font-medium text-slate-600 dark:text-slate-300">
-                      <span className="capitalize">{type.replace('_', ' ')}</span>
-                      <span className="font-semibold text-slate-900 dark:text-white">{count}</span>
-                    </div>
-                    <div className="h-2 rounded-full bg-slate-100 dark:bg-slate-800">
-                      <div
-                        className="h-full rounded-full bg-gradient-to-r from-[#6d42d8] to-[#5ac8a5]"
-                        style={{ width: `${Math.max(18, Math.min(100, Math.round((count / Math.max(totalMemories, 1)) * 100)))}%` }}
-                      />
-                    </div>
-                  </div>
-                )) : (
-                  <div className="rounded-2xl bg-slate-50 px-4 py-5 text-sm text-slate-500 dark:bg-slate-900 dark:text-slate-400">
-                    No indexed memory categories yet.
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-6">
-            <div className="grid gap-4 md:grid-cols-4">
-              {[
-                { label: 'Memories indexed', value: totalMemories, hint: 'Live company memory', icon: Database, color: 'text-[#6d42d8]' },
-                { label: 'Queries served', value: totalQueries, hint: 'Session intelligence usage', icon: MessageSquare, color: 'text-emerald-500' },
-                { label: 'Avg response', value: `${avgQuerySeconds}s`, hint: 'Current benchmark average', icon: Zap, color: 'text-amber-500' },
-                { label: 'Database size', value: `${liveStats?.chromadb_size_mb || 0} MB`, hint: 'Stored local footprint', icon: Cpu, color: 'text-sky-500' },
-              ].map((card) => {
-                const Icon = card.icon
-                return (
-                  <div key={card.label} className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-[0_20px_50px_rgba(15,23,42,0.06)] dark:border-slate-800 dark:bg-slate-950">
-                    <div className="flex items-center justify-between">
-                      <div className={`flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-50 dark:bg-slate-900 ${card.color}`}>
-                        <Icon className="h-5 w-5" />
+                  {activeMemoryTypes.length > 0 ? activeMemoryTypes.map(([type, count]) => (
+                    <div key={type}>
+                      <div className="mb-1 flex items-center justify-between text-sm font-medium text-slate-600 dark:text-slate-300">
+                        <span className="capitalize">{type.replace('_', ' ')}</span>
+                        <span className="font-semibold text-slate-900 dark:text-white">{count}</span>
                       </div>
-                      <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Live</span>
-                    </div>
-                    <div className="mt-5 text-3xl font-black tracking-tight text-slate-900 dark:text-white">{card.value}</div>
-                    <div className="mt-1 text-sm font-medium text-slate-600 dark:text-slate-300">{card.label}</div>
-                    <div className="mt-2 text-xs text-slate-400">{card.hint}</div>
-                  </div>
-                )
-              })}
-            </div>
-
-            <div className="grid gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
-              <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_20px_50px_rgba(15,23,42,0.08)] dark:border-slate-800 dark:bg-slate-950">
-                <div className="mb-5 flex items-center justify-between">
-                  <div>
-                    <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Workspace activity</div>
-                    <h3 className="mt-1 text-xl font-bold text-slate-900 dark:text-white">Recent verified interactions</h3>
-                  </div>
-                  <Activity className="h-5 w-5 text-[#6d42d8]" />
-                </div>
-
-                <div className="space-y-4">
-                  {recentSources.length > 0 ? recentSources.map((item, index) => (
-                    <div key={`${item.query}-${index}`} className="rounded-[24px] border border-slate-200 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-900/70">
-                      <div className="flex items-start justify-between gap-4">
-                        <div>
-                          <div className="text-sm font-semibold text-slate-900 dark:text-white line-clamp-1">{item.query}</div>
-                          <div className="mt-1 text-xs text-slate-500 dark:text-slate-400 line-clamp-2">{item.answer_preview}</div>
-                        </div>
-                        <div className="rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-slate-500 shadow-sm dark:bg-slate-950 dark:text-slate-300">
-                          {relativeTime(item.timestamp)}
-                        </div>
-                      </div>
-                      <div className="mt-4 flex flex-wrap items-center gap-2">
-                        {(item.sources || []).slice(0, 3).map((src) => (
-                          <span key={src} className="rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-slate-500 shadow-sm dark:bg-slate-950 dark:text-slate-300">
-                            {src}
-                          </span>
-                        ))}
-                        <span className={`rounded-full px-3 py-1 text-[11px] font-semibold ${item.confidence === 'High'
-                            ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300'
-                            : item.confidence === 'Medium'
-                              ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300'
-                              : 'bg-rose-100 text-rose-700 dark:bg-rose-500/10 dark:text-rose-300'
-                          }`}>
-                          {item.confidence || 'Low'} confidence
-                        </span>
+                      <div className="h-2 rounded-full bg-slate-100 dark:bg-slate-800">
+                        <div
+                          className="h-full rounded-full bg-gradient-to-r from-[#6d42d8] to-[#5ac8a5]"
+                          style={{ width: `${Math.max(18, Math.min(100, Math.round((count / Math.max(totalMemories, 1)) * 100)))}%` }}
+                        />
                       </div>
                     </div>
                   )) : (
-                    <div className="rounded-[24px] border border-dashed border-slate-200 bg-slate-50/70 px-5 py-8 text-center text-sm text-slate-500 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-400">
-                      No recent activity yet. Ask a question and this panel will populate automatically.
+                    <div className="rounded-2xl bg-slate-50 px-4 py-5 text-sm text-slate-500 dark:bg-slate-900 dark:text-slate-400">
+                      No indexed memory categories yet.
                     </div>
                   )}
                 </div>
               </div>
+            </div>
 
-              <div className="space-y-6">
+            <div className="space-y-6">
+              <div className="grid gap-4 md:grid-cols-4">
+                {[
+                  { label: 'Memories indexed', value: totalMemories, hint: 'Live company memory', icon: Database, color: 'text-[#6d42d8]' },
+                  { label: 'Queries served', value: totalQueries, hint: 'Session intelligence usage', icon: MessageSquare, color: 'text-emerald-500' },
+                  { label: 'Avg response', value: `${avgQuerySeconds}s`, hint: 'Current benchmark average', icon: Zap, color: 'text-amber-500' },
+                  { label: 'Database size', value: `${liveStats?.chromadb_size_mb || 0} MB`, hint: 'Stored local footprint', icon: Cpu, color: 'text-sky-500' },
+                ].map((card) => {
+                  const Icon = card.icon
+                  return (
+                    <div key={card.label} className="rounded-[24px] border border-slate-200 bg-white p-5 shadow-[0_20px_50px_rgba(15,23,42,0.06)] dark:border-slate-800 dark:bg-slate-950">
+                      <div className="flex items-center justify-between">
+                        <div className={`flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-50 dark:bg-slate-900 ${card.color}`}>
+                          <Icon className="h-5 w-5" />
+                        </div>
+                        <span className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Live</span>
+                      </div>
+                      <div className="mt-5 text-3xl font-black tracking-tight text-slate-900 dark:text-white">{card.value}</div>
+                      <div className="mt-1 text-sm font-medium text-slate-600 dark:text-slate-300">{card.label}</div>
+                      <div className="mt-2 text-xs text-slate-400">{card.hint}</div>
+                    </div>
+                  )
+                })}
+              </div>
+
+              <div className="grid gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
                 <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_20px_50px_rgba(15,23,42,0.08)] dark:border-slate-800 dark:bg-slate-950">
                   <div className="mb-5 flex items-center justify-between">
                     <div>
-                      <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Billing snapshots</div>
-                      <h3 className="mt-1 text-xl font-bold text-slate-900 dark:text-white">Recent payment requests</h3>
+                      <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Workspace activity</div>
+                      <h3 className="mt-1 text-xl font-bold text-slate-900 dark:text-white">Recent verified interactions</h3>
                     </div>
-                    <CreditCard className="h-5 w-5 text-[#6d42d8]" />
+                    <Activity className="h-5 w-5 text-[#6d42d8]" />
                   </div>
-                  <div className="space-y-3">
-                    {paymentOverview.length > 0 ? paymentOverview.map((payment) => (
-                      <div key={payment.request_id} className="rounded-2xl bg-slate-50 px-4 py-4 dark:bg-slate-900">
-                        <div className="flex items-start justify-between gap-3">
+
+                  <div className="space-y-4">
+                    {recentSources.length > 0 ? recentSources.map((item, index) => (
+                      <div key={`${item.query}-${index}`} className="rounded-[24px] border border-slate-200 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-900/70">
+                        <div className="flex items-start justify-between gap-4">
                           <div>
-                            <div className="text-sm font-semibold capitalize text-slate-900 dark:text-white">{payment.plan} plan</div>
-                            <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                              {payment.customer_email || 'No customer email'} • {payment.billing_cycle}
-                            </div>
+                            <div className="text-sm font-semibold text-slate-900 dark:text-white line-clamp-1">{item.query}</div>
+                            <div className="mt-1 text-xs text-slate-500 dark:text-slate-400 line-clamp-2">{item.answer_preview}</div>
                           </div>
-                          <span className="rounded-full bg-white px-3 py-1 text-[11px] font-semibold capitalize text-slate-500 shadow-sm dark:bg-slate-950 dark:text-slate-300">
-                            {payment.status?.replaceAll('_', ' ')}
+                          <div className="rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-slate-500 shadow-sm dark:bg-slate-950 dark:text-slate-300">
+                            {relativeTime(item.timestamp)}
+                          </div>
+                        </div>
+                        <div className="mt-4 flex flex-wrap items-center gap-2">
+                          {(item.sources || []).slice(0, 3).map((src) => (
+                            <span key={src} className="rounded-full bg-white px-3 py-1 text-[11px] font-semibold text-slate-500 shadow-sm dark:bg-slate-950 dark:text-slate-300">
+                              {src}
+                            </span>
+                          ))}
+                          <span className={`rounded-full px-3 py-1 text-[11px] font-semibold ${item.confidence === 'High'
+                            ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300'
+                            : item.confidence === 'Medium'
+                              ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/10 dark:text-amber-300'
+                              : 'bg-rose-100 text-rose-700 dark:bg-rose-500/10 dark:text-rose-300'
+                            }`}>
+                            {item.confidence || 'Low'} confidence
                           </span>
                         </div>
                       </div>
                     )) : (
-                      <div className="rounded-2xl bg-slate-50 px-4 py-5 text-sm text-slate-500 dark:bg-slate-900 dark:text-slate-400">
-                        No billing activity captured yet.
+                      <div className="rounded-[24px] border border-dashed border-slate-200 bg-slate-50/70 px-5 py-8 text-center text-sm text-slate-500 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-400">
+                        No recent activity yet. Ask a question and this panel will populate automatically.
                       </div>
                     )}
                   </div>
                 </div>
 
-                <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_20px_50px_rgba(15,23,42,0.08)] dark:border-slate-800 dark:bg-slate-950">
-                  <div className="mb-5 flex items-center justify-between">
-                    <div>
-                      <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Account controls</div>
-                      <h3 className="mt-1 text-xl font-bold text-slate-900 dark:text-white">Update profile</h3>
+                <div className="space-y-6">
+                  <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_20px_50px_rgba(15,23,42,0.08)] dark:border-slate-800 dark:bg-slate-950">
+                    <div className="mb-5 flex items-center justify-between">
+                      <div>
+                        <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Billing snapshots</div>
+                        <h3 className="mt-1 text-xl font-bold text-slate-900 dark:text-white">Recent payment requests</h3>
+                      </div>
+                      <CreditCard className="h-5 w-5 text-[#6d42d8]" />
                     </div>
-                    <UserRound className="h-5 w-5 text-[#6d42d8]" />
+                    <div className="space-y-3">
+                      {paymentOverview.length > 0 ? paymentOverview.map((payment) => (
+                        <div key={payment.request_id} className="rounded-2xl bg-slate-50 px-4 py-4 dark:bg-slate-900">
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <div className="text-sm font-semibold capitalize text-slate-900 dark:text-white">{payment.plan} plan</div>
+                              <div className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                                {payment.customer_email || 'No customer email'} • {payment.billing_cycle}
+                              </div>
+                            </div>
+                            <span className="rounded-full bg-white px-3 py-1 text-[11px] font-semibold capitalize text-slate-500 shadow-sm dark:bg-slate-950 dark:text-slate-300">
+                              {payment.status?.replaceAll('_', ' ')}
+                            </span>
+                          </div>
+                        </div>
+                      )) : (
+                        <div className="rounded-2xl bg-slate-50 px-4 py-5 text-sm text-slate-500 dark:bg-slate-900 dark:text-slate-400">
+                          No billing activity captured yet.
+                        </div>
+                      )}
+                    </div>
                   </div>
 
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <label className="block">
-                      <span className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-300">
-                        <UserRound className="h-4 w-4" />
-                        Full name
-                      </span>
+                  <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_20px_50px_rgba(15,23,42,0.08)] dark:border-slate-800 dark:bg-slate-950">
+                    <div className="mb-5 flex items-center justify-between">
+                      <div>
+                        <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">Account controls</div>
+                        <h3 className="mt-1 text-xl font-bold text-slate-900 dark:text-white">Update profile</h3>
+                      </div>
+                      <UserRound className="h-5 w-5 text-[#6d42d8]" />
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <label className="block">
+                        <span className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-300">
+                          <UserRound className="h-4 w-4" />
+                          Full name
+                        </span>
+                        <input
+                          type="text"
+                          value={profileForm.name}
+                          onChange={(event) => handleProfileChange('name', event.target.value)}
+                          className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition-all focus:border-purple-400 focus:ring-4 focus:ring-purple-500/10 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100"
+                        />
+                      </label>
+
+                      <label className="block">
+                        <span className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-300">
+                          <Mail className="h-4 w-4" />
+                          Email
+                        </span>
+                        <input
+                          type="email"
+                          value={profileForm.email}
+                          onChange={(event) => handleProfileChange('email', event.target.value)}
+                          className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition-all focus:border-purple-400 focus:ring-4 focus:ring-purple-500/10 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100"
+                        />
+                      </label>
+                    </div>
+
+                    <label className="mt-4 block">
+                      <span className="mb-2 block text-sm font-medium text-slate-600 dark:text-slate-300">New password</span>
                       <input
-                        type="text"
-                        value={profileForm.name}
-                        onChange={(event) => handleProfileChange('name', event.target.value)}
+                        type="password"
+                        value={profileForm.password}
+                        onChange={(event) => handleProfileChange('password', event.target.value)}
+                        placeholder="Leave blank to keep current password"
                         className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition-all focus:border-purple-400 focus:ring-4 focus:ring-purple-500/10 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100"
                       />
                     </label>
 
-                    <label className="block">
-                      <span className="mb-2 flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-300">
-                        <Mail className="h-4 w-4" />
-                        Email
-                      </span>
-                      <input
-                        type="email"
-                        value={profileForm.email}
-                        onChange={(event) => handleProfileChange('email', event.target.value)}
-                        className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition-all focus:border-purple-400 focus:ring-4 focus:ring-purple-500/10 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100"
-                      />
-                    </label>
-                  </div>
+                    {profileError ? (
+                      <div className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-200">
+                        {profileError}
+                      </div>
+                    ) : null}
 
-                  <label className="mt-4 block">
-                    <span className="mb-2 block text-sm font-medium text-slate-600 dark:text-slate-300">New password</span>
-                    <input
-                      type="password"
-                      value={profileForm.password}
-                      onChange={(event) => handleProfileChange('password', event.target.value)}
-                      placeholder="Leave blank to keep current password"
-                      className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition-all focus:border-purple-400 focus:ring-4 focus:ring-purple-500/10 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100"
-                    />
-                  </label>
+                    {profileSuccess ? (
+                      <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-200">
+                        {profileSuccess}
+                      </div>
+                    ) : null}
 
-                  {profileError ? (
-                    <div className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700 dark:border-rose-500/20 dark:bg-rose-500/10 dark:text-rose-200">
-                      {profileError}
+                    <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:justify-between">
+                      <button
+                        type="button"
+                        onClick={handleLogout}
+                        className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-800 dark:text-slate-200 dark:hover:bg-slate-900"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        Log out
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleProfileSave}
+                        disabled={profileSaving}
+                        className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#6d42d8] to-[#8f6cff] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-500/20 transition-all hover:translate-y-[-1px] hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60"
+                      >
+                        <Save className="h-4 w-4" />
+                        {profileSaving ? 'Saving...' : 'Save profile'}
+                      </button>
                     </div>
-                  ) : null}
-
-                  {profileSuccess ? (
-                    <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-200">
-                      {profileSuccess}
-                    </div>
-                  ) : null}
-
-                  <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:justify-between">
-                    <button
-                      type="button"
-                      onClick={handleLogout}
-                      className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-800 dark:text-slate-200 dark:hover:bg-slate-900"
-                    >
-                      <LogOut className="h-4 w-4" />
-                      Log out
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleProfileSave}
-                      disabled={profileSaving}
-                      className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#6d42d8] to-[#8f6cff] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-purple-500/20 transition-all hover:translate-y-[-1px] hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60"
-                    >
-                      <Save className="h-4 w-4" />
-                      {profileSaving ? 'Saving...' : 'Save profile'}
-                    </button>
                   </div>
                 </div>
               </div>
@@ -2398,9 +2415,8 @@ function App() {
           </div>
         </div>
       </div>
-    </div>
-  )
-}
+    )
+  }
     </div >
   )
 }
