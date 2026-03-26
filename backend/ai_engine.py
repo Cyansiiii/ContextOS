@@ -25,6 +25,13 @@ vectorstore = None
 VECTORSTORE_AVAILABLE = False
 
 
+def _disable_vectorstore(reason):
+    global vectorstore, VECTORSTORE_AVAILABLE
+    print(f"WARNING: Falling back to JSON memory store: {reason}")
+    vectorstore = None
+    VECTORSTORE_AVAILABLE = False
+
+
 class LocalOllamaLLM:
     def __init__(self, model="mistral"):
         self.model = model
@@ -107,9 +114,9 @@ def get_memory_metadata_summary():
                 date_value = (meta or {}).get("date", "")
                 if date_value and (last_ingested is None or date_value > last_ingested):
                     last_ingested = date_value
-        except Exception:
-            pass
-        return memories_by_type, last_ingested
+            return memories_by_type, last_ingested
+        except Exception as exc:
+            _disable_vectorstore(exc)
 
     try:
         for memory in _load_fallback_memories():
@@ -360,7 +367,10 @@ def _fallback_similarity_search(question, limit=5):
 
 def retrieve_memory(question, limit=RETRIEVAL_LIMIT):
     if VECTORSTORE_AVAILABLE and vectorstore is not None:
-        return vectorstore.similarity_search(question, k=limit)
+        try:
+            return vectorstore.similarity_search(question, k=limit)
+        except Exception as exc:
+            _disable_vectorstore(exc)
     return _fallback_similarity_search(question, limit=limit)
 
 
@@ -369,12 +379,15 @@ def store_memory(text, metadata):
     chunks = _chunk_text(text, chunk_size=500, chunk_overlap=50)
 
     if VECTORSTORE_AVAILABLE and vectorstore is not None:
-        vectorstore.add_texts(
-            texts=chunks,
-            metadatas=[metadata] * len(chunks)
-        )
-        vectorstore.persist()
-        return
+        try:
+            vectorstore.add_texts(
+                texts=chunks,
+                metadatas=[metadata] * len(chunks)
+            )
+            vectorstore.persist()
+            return
+        except Exception as exc:
+            _disable_vectorstore(exc)
 
     memories = _load_fallback_memories()
     memories.extend([
@@ -441,8 +454,8 @@ def get_db_stats():
         try:
             count = vectorstore.get()
             return len(count["ids"]) if count and "ids" in count else 0
-        except Exception:
-            return 0
+        except Exception as exc:
+            _disable_vectorstore(exc)
 
     try:
         return len(_load_fallback_memories())

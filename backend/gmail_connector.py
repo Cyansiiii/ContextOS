@@ -21,7 +21,7 @@ from googleapiclient.discovery import build
 from bs4 import BeautifulSoup
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from ai_engine import vectorstore, embeddings
+import ai_engine
 
 # ---------------------------------------------------------------------------
 # Config
@@ -46,6 +46,7 @@ def _load_env():
     """Return client_id, client_secret, redirect_uri from environment."""
     from dotenv import load_dotenv
     load_dotenv(os.path.join(BACKEND_DIR, ".env"))
+    load_dotenv(os.path.join(BACKEND_DIR, ".env.local"), override=True)
     return (
         os.getenv("GOOGLE_CLIENT_ID"),
         os.getenv("GOOGLE_CLIENT_SECRET"),
@@ -139,8 +140,11 @@ def is_connected() -> bool:
 def get_sync_meta() -> dict:
     """Return persisted sync metadata (last_sync, email_count)."""
     if os.path.exists(SYNC_META_PATH):
-        with open(SYNC_META_PATH, "r") as f:
-            return json.load(f)
+        try:
+            with open(SYNC_META_PATH, "r") as f:
+                return json.load(f)
+        except Exception:
+            return {"last_sync": None, "email_count": 0}
     return {"last_sync": None, "email_count": 0}
 
 
@@ -269,17 +273,26 @@ def fetch_emails(max_results: int = 75) -> list[dict]:
 
 def _get_existing_message_ids() -> set:
     """Query ChromaDB for all stored Gmail message_ids to skip duplicates."""
-    if vectorstore is None:
-        return set()
+    ids = set()
+
+    if getattr(ai_engine, "vectorstore", None) is not None:
+        try:
+            collection = ai_engine.vectorstore.get(where={"source_type": "email"})
+            for meta in collection.get("metadatas", []):
+                if meta and "message_id" in meta:
+                    ids.add(meta["message_id"])
+        except Exception:
+            pass
+
     try:
-        collection = vectorstore.get(where={"source_type": "email"})
-        ids = set()
-        for meta in collection.get("metadatas", []):
-            if meta and "message_id" in meta:
+        for memory in ai_engine._load_fallback_memories():
+            meta = memory.get("metadata", {})
+            if meta.get("source_type") == "email" and meta.get("message_id"):
                 ids.add(meta["message_id"])
-        return ids
     except Exception:
-        return set()
+        pass
+
+    return ids
 
 
 # ---------------------------------------------------------------------------
@@ -291,9 +304,6 @@ def ingest_emails_to_chromadb(emails: list[dict]) -> dict:
     Chunk, embed, and store emails in ChromaDB.
     Returns { synced, skipped, total_chunks }.
     """
-    if vectorstore is None or embeddings is None:
-        raise ConnectionError("ChromaDB or Ollama embeddings not available")
-
     existing_ids = _get_existing_message_ids()
 
     splitter = RecursiveCharacterTextSplitter(
@@ -330,19 +340,29 @@ def ingest_emails_to_chromadb(emails: list[dict]) -> dict:
             "message_id": email["message_id"],
         }
 
-        vectorstore.add_texts(
-            texts=chunks,
-            metadatas=[metadata] * len(chunks),
-        )
+        if getattr(ai_engine, "vectorstore", None) is not None and getattr(ai_engine, "embeddings", None) is not None:
+            try:
+                ai_engine.vectorstore.add_texts(
+                    texts=chunks,
+                    metadatas=[metadata] * len(chunks),
+                )
+            except Exception as exc:
+                # Match document uploads: if embeddings are offline, degrade to the JSON store.
+                if hasattr(ai_engine, "_disable_vectorstore"):
+                    ai_engine._disable_vectorstore(exc)
+                ai_engine.store_memory(doc_text, metadata)
+        else:
+            ai_engine.store_memory(doc_text, metadata)
 
         synced += 1
         total_chunks += len(chunks)
 
     # Persist ChromaDB
-    try:
-        vectorstore.persist()
-    except Exception:
-        pass  # Newer ChromaDB versions auto-persist
+    if getattr(ai_engine, "vectorstore", None) is not None:
+        try:
+            ai_engine.vectorstore.persist()
+        except Exception:
+            pass  # Newer ChromaDB versions auto-persist
 
     # Update sync metadata
     _save_sync_meta(synced)

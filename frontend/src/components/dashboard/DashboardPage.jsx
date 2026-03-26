@@ -287,9 +287,16 @@ function AmdMonitorCard() {
         </div>
       </div>
 
-      <div className="mt-6 pt-4 border-t border-[#a9b09b]/15 flex items-center gap-4 text-xs font-medium text-[#575e4c] dark:text-[#a9b09b]">
+      <div className="mt-6 flex flex-wrap items-center gap-3 border-t border-[#a9b09b]/15 pt-4 text-xs font-medium text-[#575e4c] dark:text-[#a9b09b]">
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#446500] dark:bg-[#bbf165]" /> {status?.active_model || 'Mistral 7B'}</span>
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#5d5295] dark:bg-[#beb2fd]" /> {status?.embedding_model || 'Embed-v2'}</span>
+        <span
+          className="inline-flex items-center gap-2 rounded-full border border-[#dce6ca] bg-[#f4f8ed] px-3 py-1 font-semibold text-[#446500] dark:border-[#3b452f] dark:bg-[#242b1f] dark:text-[#d8f3a6]"
+          title={status?.hardware?.gpu || 'Unknown GPU'}
+        >
+          <Cpu className="h-3.5 w-3.5" />
+          GPU: {status?.hardware?.gpu || 'Unknown'}
+        </span>
       </div>
     </motion.div>
   )

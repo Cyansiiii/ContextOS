@@ -18,6 +18,7 @@ import secrets
 from io import BytesIO
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
+from urllib.parse import urlencode
 from uuid import uuid4
 
 # Load environment variables
@@ -1296,15 +1297,61 @@ async def amd_live_metrics():
 # GMAIL INTEGRATION ENDPOINTS
 # ═══════════════════════════════════════════
 
-from gmail_connector import (
-    get_auth_url,
-    exchange_code,
-    is_connected,
-    load_credentials,
-    fetch_emails,
-    ingest_emails_to_chromadb,
-    get_sync_meta,
-)
+GMAIL_CONNECTOR_IMPORT_ERROR = None
+
+try:
+    from gmail_connector import (
+        get_auth_url,
+        exchange_code,
+        is_connected,
+        load_credentials,
+        fetch_emails,
+        ingest_emails_to_chromadb,
+        get_sync_meta,
+    )
+except Exception as exc:
+    GMAIL_CONNECTOR_IMPORT_ERROR = exc
+
+    def get_auth_url():
+        raise RuntimeError("Gmail connector dependencies are unavailable.")
+
+    def exchange_code(code: str):
+        raise RuntimeError("Gmail connector dependencies are unavailable.")
+
+    def is_connected():
+        return False
+
+    def load_credentials():
+        return None
+
+    def fetch_emails(max_results: int = 75):
+        raise RuntimeError("Gmail connector dependencies are unavailable.")
+
+    def ingest_emails_to_chromadb(emails):
+        raise RuntimeError("Gmail connector dependencies are unavailable.")
+
+    def get_sync_meta():
+        return {"last_sync": None, "email_count": 0}
+
+
+def _gmail_unavailable_detail():
+    return {
+        "error": "gmail_connector_unavailable",
+        "message": "Gmail integration dependencies are unavailable. Install backend requirements and restart the API.",
+        "reason": str(GMAIL_CONNECTOR_IMPORT_ERROR),
+    }
+
+
+def _require_gmail_connector():
+    if GMAIL_CONNECTOR_IMPORT_ERROR is not None:
+        raise HTTPException(status_code=503, detail=_gmail_unavailable_detail())
+
+
+def _gmail_frontend_redirect(status: str, message: str = ""):
+    params = {"tab": "upload", "gmail": status}
+    if message:
+        params["gmail_message"] = message[:180]
+    return RedirectResponse(url=f"{FRONTEND_APP_URL}/?{urlencode(params)}")
 
 
 @app.get("/gmail/connect")
@@ -1313,6 +1360,7 @@ async def gmail_connect():
     Returns Google OAuth consent URL.
     If already connected (valid token exists), returns status instead.
     """
+    _require_gmail_connector()
     if is_connected():
         return {"status": "already_connected", "auth_url": None}
 
@@ -1327,19 +1375,22 @@ async def gmail_connect():
 
 
 @app.get("/gmail/callback")
-async def gmail_callback(code: str, state: str = None):
+async def gmail_callback(code: str | None = None, state: str | None = None, error: str | None = None):
     """
     Handles the OAuth redirect from Google.
     Exchanges code for token, saves to gmail_token.json,
     then redirects the user back to the frontend.
     """
+    _require_gmail_connector()
+    if error:
+        return _gmail_frontend_redirect("error", f"Gmail authorization was not completed: {error}.")
+    if not code:
+        return _gmail_frontend_redirect("error", "Google did not return an authorization code.")
     try:
         exchange_code(code)
-        return RedirectResponse(
-            url=f"{FRONTEND_APP_URL}/?tab=upload&gmail=connected"
-        )
+        return _gmail_frontend_redirect("connected", "Gmail connected successfully.")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"OAuth exchange failed: {str(e)}")
+        return _gmail_frontend_redirect("error", f"OAuth exchange failed: {str(e)}")
 
 
 @app.post("/gmail/sync")
@@ -1348,6 +1399,7 @@ async def gmail_sync(req: GmailSyncRequest):
     Fetches emails from Gmail, then ingests them into ChromaDB.
     Handles token-expired, ollama-offline, and quota errors gracefully.
     """
+    _require_gmail_connector()
     if not is_connected():
         try:
             auth_url = get_auth_url()
@@ -1413,9 +1465,18 @@ async def gmail_status():
     Returns Gmail connection status, last sync time, and email count.
     Used by the frontend GmailCard to poll for connection state.
     """
+    if GMAIL_CONNECTOR_IMPORT_ERROR is not None:
+        return {
+            "available": False,
+            "connected": False,
+            "last_sync": None,
+            "email_count": 0,
+            "detail": _gmail_unavailable_detail(),
+        }
     connected = is_connected()
     meta = get_sync_meta()
     return {
+        "available": True,
         "connected": connected,
         "last_sync": meta.get("last_sync"),
         "email_count": meta.get("email_count", 0),
@@ -1427,12 +1488,20 @@ async def gmail_disconnect():
     """
     Disconnects Gmail by deleting the local token.
     """
+    if GMAIL_CONNECTOR_IMPORT_ERROR is not None:
+        return {"disconnected": True, "available": False}
     token_path = os.path.join(os.path.dirname(__file__), "gmail_token.json")
+    sync_meta_path = os.path.join(os.path.dirname(__file__), "gmail_sync_meta.json")
     if os.path.exists(token_path):
         try:
             os.remove(token_path)
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Failed to delete token: {str(e)}")
+    if os.path.exists(sync_meta_path):
+        try:
+            os.remove(sync_meta_path)
+        except Exception:
+            pass
     return {"disconnected": True}
 
 

@@ -20,4 +20,5 @@ frontend/.eslintcache
 # Database
 database/chroma_db/*.sqlite3
 database/chroma_db/chroma.sqlite3
+database/fallback_memory.json
 uvicorn.log

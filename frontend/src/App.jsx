@@ -208,6 +208,12 @@ function App() {
   }, [appNotice])
 
   useEffect(() => {
+    if (!uploadMessage) return undefined
+    const timeoutId = window.setTimeout(() => setUploadMessage(''), 2000)
+    return () => window.clearTimeout(timeoutId)
+  }, [uploadMessage])
+
+  useEffect(() => {
     setUploadSourceLabel(defaultUploadLabel(uploadSource))
   }, [defaultUploadLabel, uploadSource])
 
@@ -612,7 +618,14 @@ function App() {
       fetchAnalyticsOverview()
     } catch (error) {
       console.error(error);
-      setUploadMessage(error.response?.data?.detail || 'Failed to upload memory.');
+      const detail = error.response?.data?.detail
+      const message =
+        typeof detail === 'string'
+          ? detail
+          : typeof detail === 'object' && typeof detail?.message === 'string'
+            ? detail.message
+            : 'Failed to upload memory.'
+      setUploadMessage(message)
     }
     setUploading(false);
   }
@@ -748,7 +761,6 @@ function App() {
     <div className="min-h-screen text-slate-800 dark:text-slate-200 selection:bg-purple-200 overflow-x-hidden relative hero-gradient">
 
       {/* FLOATING TOP NAVIGATION */}
-      {activeTab !== 'analytics' && (
       <nav className="fixed top-0 left-0 right-0 z-50 glass-nav transition-all duration-300 h-14 flex items-center">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between w-full h-full">
           <div className="flex justify-start items-center">
@@ -856,11 +868,9 @@ function App() {
       )
     }
     </nav >
-  )
-  }
 
   {/* MAIN CONTENT AREA */ }
-  <main className={`${activeTab === 'analytics' || activeTab === 'upload' ? 'pt-0 pb-0' : 'pt-32 pb-24'} relative z-10 min-h-screen`}>
+  <main className={`${activeTab === 'upload' ? 'pt-0 pb-0' : activeTab === 'analytics' ? 'pt-16 pb-0' : 'pt-32 pb-24'} relative z-10 min-h-screen`}>
 
     {/* --- SEARCH / HOME VIEW --- */}
     {activeTab === 'search' && (
@@ -1395,12 +1405,6 @@ function App() {
                 </button>
               </div>
 
-              {uploadMessage && (
-                <div className="animate-pop-in mt-4 flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
-                  <p className="font-semibold">{uploadMessage}</p>
-                </div>
-              )}
             </div>
           )}
         </div>
@@ -1654,12 +1658,6 @@ function App() {
                       Your data is processed locally and never sent to external APIs.
                     </div>
 
-                    {uploadMessage && (
-                      <div className="flex items-center gap-3 rounded-[22px] border border-emerald-200 bg-emerald-50 px-4 py-4 text-sm font-semibold text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-200">
-                        <CheckCircle2 className="h-5 w-5 shrink-0" />
-                        <p>{uploadMessage}</p>
-                      </div>
-                    )}
                   </div>
                 </div>
               )}
@@ -1670,63 +1668,8 @@ function App() {
     )}
 
     {activeTab === 'upload' && (
-      <div className="animate-slide-up min-h-screen bg-[radial-gradient(circle_at_top_left,#f7faf4_0%,#fdfdfb_48%,#f2f6ee_100%)] dark:bg-[radial-gradient(circle_at_top_left,#0f172a_0%,#020617_55%,#07111b_100%)]">
-        <div className="mx-auto flex min-h-screen w-full max-w-[1440px]">
-          <aside className="hidden w-[244px] shrink-0 flex-col border-r border-[#edf1e7] bg-white/68 px-4 py-5 backdrop-blur-xl lg:flex dark:border-white/10 dark:bg-slate-950/55">
-            <button type="button" onClick={() => setActiveTab('search')} className="flex items-center gap-3 px-2 text-left">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#78cf53] to-[#2f8b45] shadow-[0_14px_28px_rgba(61,145,75,0.24)]">
-                <Database className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <div className="text-[2rem] font-bold leading-none tracking-[-0.05em] text-[#151515] dark:text-white">ContextOS</div>
-                <div className="mt-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#83887d] dark:text-slate-400">AI Memory Engine</div>
-              </div>
-            </button>
-
-            <button onClick={handleNewChat} className="mt-8 inline-flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#6fca49] to-[#2f8b45] px-6 py-4 text-base font-bold text-white shadow-[0_18px_34px_rgba(54,136,65,0.24)] transition hover:scale-[1.01]">
-              <Plus className="h-4 w-4" />
-              New Chat
-            </button>
-
-            <div className="mt-8 space-y-2">
-              {[
-                { id: 'search', label: 'Chat', icon: MessageSquare },
-                { id: 'dashboard', label: 'Analytics', icon: BarChart3 },
-                { id: 'upload', label: 'Memory Hub', icon: Database },
-              ].map((item) => {
-                const Icon = item.icon
-                const active = activeTab === item.id
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => setActiveTab(item.id)}
-                    className={`flex w-full items-center gap-3 rounded-full px-4 py-3 text-left text-[1.05rem] transition-all ${active
-                      ? 'bg-[#e9f8ec] font-semibold text-[#2d8743] shadow-[inset_0_1px_0_rgba(255,255,255,0.7)] dark:bg-emerald-500/15 dark:text-emerald-200'
-                      : 'text-[#334155] hover:bg-white/70 dark:text-slate-300 dark:hover:bg-white/5'
-                      }`}
-                  >
-                    <Icon className={`h-5 w-5 ${active ? 'text-[#2d8743]' : 'text-slate-500 dark:text-slate-400'}`} />
-                    {item.label}
-                  </button>
-                )
-              })}
-            </div>
-
-            <div className="mt-auto border-t border-[#edf1e7] pt-5 dark:border-white/10">
-              <div className="space-y-2">
-                <button onClick={openSettings} className="flex w-full items-center gap-3 rounded-full px-4 py-3 text-left text-[1.02rem] text-[#334155] transition hover:bg-white/70 dark:text-slate-300 dark:hover:bg-white/5">
-                  <Settings className="h-5 w-5 text-slate-500 dark:text-slate-400" />
-                  Settings
-                </button>
-                <button onClick={openHelp} className="flex w-full items-center gap-3 rounded-full px-4 py-3 text-left text-[1.02rem] text-[#334155] transition hover:bg-white/70 dark:text-slate-300 dark:hover:bg-white/5">
-                  <CircleHelp className="h-5 w-5 text-slate-500 dark:text-slate-400" />
-                  Help
-                </button>
-              </div>
-            </div>
-          </aside>
-
+      <div className="animate-slide-up min-h-screen bg-[radial-gradient(circle_at_top_left,#f7faf4_0%,#fdfdfb_48%,#f2f6ee_100%)] pt-16 dark:bg-[radial-gradient(circle_at_top_left,#0f172a_0%,#020617_55%,#07111b_100%)] lg:pt-20">
+        <div className="mx-auto min-h-[calc(100vh-4rem)] w-full max-w-[1440px]">
           <div className="relative flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
             <div className="pointer-events-none absolute left-10 top-24 h-44 w-44 rounded-full bg-[#e8f4df] blur-3xl dark:bg-emerald-500/10" />
             <div className="pointer-events-none absolute bottom-24 right-16 h-56 w-56 rounded-full bg-[#f0f4ed] blur-3xl dark:bg-slate-700/20" />
@@ -1947,12 +1890,6 @@ function App() {
                       Your data is processed locally and never sent to external APIs.
                     </div>
 
-                    {uploadMessage && (
-                      <div className="mt-6 flex items-center gap-3 rounded-[22px] border border-emerald-200 bg-emerald-50 px-4 py-4 text-sm font-semibold text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-200">
-                        <CheckCircle2 className="h-5 w-5 shrink-0" />
-                        <p>{uploadMessage}</p>
-                      </div>
-                    )}
                   </div>
                 )}
               </div>
@@ -2408,4 +2345,3 @@ function App() {
 }
 
 export default App
-

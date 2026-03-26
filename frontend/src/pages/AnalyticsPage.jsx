@@ -4,7 +4,6 @@ import KpiCard from '../components/analytics/KpiCard'
 import QueryLineChart from '../components/analytics/QueryLineChart'
 import SourceDonutChart from '../components/analytics/SourceDonutChart'
 import QueryLogTable from '../components/analytics/QueryLogTable'
-import Sidebar from '../components/Sidebar'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
@@ -34,6 +33,12 @@ export default function AnalyticsPage({ onNavigateToChat }) {
   const historyTimer = useRef(null)
 
   // ─── Data Fetching ────────────────────────────────
+  const fetchOverview = useCallback(async () => {
+    const res = await fetch(`${API}/analytics/overview`)
+    if (!res.ok) throw new Error('Failed to fetch analytics overview')
+    return res.json()
+  }, [])
+
   const fetchStats = useCallback(async () => {
     try {
       setStatsError(false)
@@ -43,12 +48,23 @@ export default function AnalyticsPage({ onNavigateToChat }) {
       setStats(data)
       setLastRefresh(new Date())
     } catch (e) {
-      console.error('Stats fetch error:', e)
-      setStatsError(true)
+      try {
+        const overview = await fetchOverview()
+        setStats({
+          total_memories: overview.summary?.total_memories || 0,
+          memories_by_type: overview.memory_distribution || {},
+        })
+        setHistory((prev) => (prev?.length ? prev : (Array.isArray(overview.recent_queries) ? overview.recent_queries : [])))
+        setLastRefresh(new Date())
+        setStatsError(false)
+      } catch (fallbackError) {
+        console.error('Stats fetch error:', e, fallbackError)
+        setStatsError(true)
+      }
     } finally {
       setStatsLoading(false)
     }
-  }, [])
+  }, [fetchOverview])
 
   const fetchHistory = useCallback(async () => {
     try {
@@ -58,12 +74,19 @@ export default function AnalyticsPage({ onNavigateToChat }) {
       const data = await res.json()
       setHistory(Array.isArray(data.history) ? data.history : (Array.isArray(data) ? data : []))
     } catch (e) {
-      console.error('History fetch error:', e)
-      setHistoryError(true)
+      try {
+        const overview = await fetchOverview()
+        setHistory(Array.isArray(overview.recent_queries) ? overview.recent_queries : [])
+        setLastRefresh((prev) => prev || new Date())
+        setHistoryError(false)
+      } catch (fallbackError) {
+        console.error('History fetch error:', e, fallbackError)
+        setHistoryError(true)
+      }
     } finally {
       setHistoryLoading(false)
     }
-  }, [])
+  }, [fetchOverview])
 
   const fetchBenchmarks = useCallback(async () => {
     try {
@@ -123,12 +146,6 @@ export default function AnalyticsPage({ onNavigateToChat }) {
     [memoriesByType]
   )
 
-  const handleNavigateName = (name) => {
-    if (name === 'Chat' && onNavigateToChat) {
-      onNavigateToChat();
-    }
-  }
-
   return (
     <div className="relative min-h-screen text-[#181d1a]" 
          style={{
@@ -160,10 +177,8 @@ export default function AnalyticsPage({ onNavigateToChat }) {
         />
       </div>
 
-      <Sidebar activeNav="Analytics" onNavigateName={handleNavigateName} />
-
       {/* ═══ CONTENT ═══ */}
-      <main className="ml-[240px] flex-1 min-h-screen relative z-10 px-10 pt-10 pb-20">
+      <main className="relative z-10 min-h-screen px-4 pt-10 pb-20 sm:px-6 lg:px-10">
         <div className="max-w-[1400px] mx-auto overflow-x-hidden">
           {/* ── Page Header ─────────────────────────── */}
           <motion.div

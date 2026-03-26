@@ -25,8 +25,17 @@ export default function GmailCard() {
   const [emailCount, setEmailCount] = useState(0)
   const [toast, setToast] = useState(null)
   const [syncResult, setSyncResult] = useState(null)
-  const pollRef = useRef(null)
   const toastTimeout = useRef(null)
+
+  const getApiErrorMessage = (error, fallback) => {
+    const detail = error?.response?.data?.detail
+    if (typeof detail === 'string' && detail.trim()) return detail
+    if (typeof detail === 'object') {
+      if (typeof detail.message === 'string' && detail.message.trim()) return detail.message
+      if (typeof detail.reason === 'string' && detail.reason.trim()) return detail.reason
+    }
+    return fallback
+  }
 
   const showToast = (type, message) => {
     setToast({ type, message })
@@ -39,6 +48,10 @@ export default function GmailCard() {
         setState(STATES.CONNECTED_IDLE)
         setLastSync(data.last_sync)
         setEmailCount(data.email_count)
+      } else {
+        setState(STATES.DISCONNECTED)
+        setLastSync(data.last_sync || null)
+        setEmailCount(data.email_count || 0)
       }
     } catch {
       // Backend can be offline during local setup.
@@ -51,10 +64,23 @@ export default function GmailCard() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
-    if (params.get('gmail') === 'connected') {
+    const gmailStatus = params.get('gmail')
+    const gmailMessage = params.get('gmail_message')
+
+    if (gmailStatus === 'connected') {
       setState(STATES.CONNECTED_IDLE)
+      showToast('success', gmailMessage || 'Gmail connected successfully!')
       checkStatus()
-      window.history.replaceState({}, '', window.location.pathname)
+    } else if (gmailStatus === 'error') {
+      setState(STATES.DISCONNECTED)
+      showToast('error', gmailMessage || 'Failed to connect Gmail.')
+    }
+
+    if (gmailStatus) {
+      params.delete('gmail')
+      params.delete('gmail_message')
+      const nextQuery = params.toString()
+      window.history.replaceState({}, '', `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ''}`)
     }
   }, [checkStatus])
 
@@ -64,12 +90,6 @@ export default function GmailCard() {
     return () => clearTimeout(toastTimeout.current)
   }, [toast])
 
-  useEffect(() => {
-    return () => {
-      if (pollRef.current) clearInterval(pollRef.current)
-    }
-  }, [])
-
   const handleConnect = async () => {
     setState(STATES.CONNECTING)
     try {
@@ -78,43 +98,24 @@ export default function GmailCard() {
       if (data.status === 'already_connected') {
         setState(STATES.CONNECTED_IDLE)
         checkStatus()
+        showToast('success', 'Gmail is already connected.')
         return
       }
 
-      window.open(data.auth_url, '_blank')
+      if (!data?.auth_url) {
+        throw new Error('Backend did not return a Gmail authorization URL.')
+      }
 
-      let elapsed = 0
-      pollRef.current = setInterval(async () => {
-        elapsed += 2
-        if (elapsed > 60) {
-          clearInterval(pollRef.current)
-          pollRef.current = null
-          setState(STATES.DISCONNECTED)
-          showToast('error', 'Connection timed out. Try again.')
-          return
-        }
-
-        try {
-          const res = await axios.get(`${API}/gmail/status`)
-          if (res.data.connected) {
-            clearInterval(pollRef.current)
-            pollRef.current = null
-            setState(STATES.CONNECTED_IDLE)
-            setLastSync(res.data.last_sync)
-            setEmailCount(res.data.email_count)
-            showToast('success', 'Gmail connected successfully!')
-          }
-        } catch {
-          // Ignore polling retries while waiting for OAuth callback.
-        }
-      }, 2000)
+      window.location.assign(data.auth_url)
     } catch (err) {
       setState(STATES.DISCONNECTED)
       const detail = err.response?.data?.detail
       if (typeof detail === 'object' && detail?.error === 'gmail_oauth_not_configured') {
         showToast('error', 'Gmail OAuth not configured in backend/.env.')
+      } else if (typeof detail === 'object' && detail?.error === 'gmail_connector_unavailable') {
+        showToast('error', 'Gmail dependencies are missing in the backend environment.')
       } else {
-        showToast('error', 'Failed to start Gmail connection.')
+        showToast('error', getApiErrorMessage(err, 'Failed to start Gmail connection.'))
       }
     }
   }
@@ -153,8 +154,10 @@ export default function GmailCard() {
       } else if (typeof detail === 'object' && detail?.error === 'gmail_oauth_not_configured') {
         setState(STATES.DISCONNECTED)
         showToast('error', 'Gmail OAuth not configured in backend/.env.')
+      } else if (typeof detail === 'object' && detail?.error === 'gmail_connector_unavailable') {
+        showToast('error', 'Gmail dependencies are missing in the backend environment.')
       } else {
-        showToast('error', 'Sync failed. Check backend logs.')
+        showToast('error', getApiErrorMessage(err, 'Sync failed. Check backend logs.'))
       }
     }
   }
