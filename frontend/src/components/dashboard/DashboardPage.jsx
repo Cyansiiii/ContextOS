@@ -250,7 +250,7 @@ function AmdMonitorCard() {
           <div className="space-y-1">
             <span className="text-[10px] font-bold text-[#575e4c] dark:text-[#a9b09b] uppercase tracking-widest">System Status</span>
             <h3 className="text-xl font-bold text-[#446500] dark:text-[#bbf165] flex items-center gap-2">
-              AMD RUNTIME MONITOR
+              RUNTIME MONITOR
               <span className="bg-[#bbf165] text-[#3b5900] text-[10px] px-2 py-0.5 rounded-md font-bold">LOCAL</span>
             </h3>
           </div>

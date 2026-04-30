@@ -221,7 +221,7 @@ export default function AmdStatusCard() {
             <div className="flex items-center gap-3">
               <StatusDot status={status.status} />
               <div className="text-[12px] font-bold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
-                AMD Runtime Monitor
+                Runtime Monitor
               </div>
             </div>
             <h2 className="mt-3 text-2xl font-black tracking-[-0.04em] text-slate-900 dark:text-white">
