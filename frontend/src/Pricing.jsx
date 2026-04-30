@@ -391,11 +391,11 @@ export default function Pricing({ currentUser }) {
                     No credit card for free trial
                 </div>
                 <div className="amd-badge">
-                    <svg width="16" height="10" viewBox="0 0 32 20" fill="none">
-                        <rect width="32" height="20" rx="3" fill="white" opacity=".15" />
-                        <text x="4" y="14" fill="white" fontSize="11" fontWeight="900" fontFamily="Arial">AMD</text>
+                    <svg width="22" height="12" viewBox="0 0 36 20" fill="none">
+                        <rect width="36" height="20" rx="3" fill="white" opacity=".15" />
+                        <text x="4" y="14" fill="white" fontSize="13" fontWeight="900" fontFamily="Arial">TIT</text>
                     </svg>
-                    Powered by AMD Ryzen AI
+                    Hackethon
                 </div>
             </motion.div>
 

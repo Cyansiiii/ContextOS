@@ -9,11 +9,11 @@ export default function Integrations() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const cards = document.querySelectorAll('.app-card')
-      if (cards.length === 0) return
-      const card = cards[Math.floor(Math.random() * cards.length)]
       const stage = stageRef.current
       if (!stage) return
+      const cards = stage.querySelectorAll('.app-card')
+      if (cards.length === 0) return
+      const card = cards[Math.floor(Math.random() * cards.length)]
 
       const p = document.createElement('div')
       p.className = 'particle'
@@ -91,7 +91,7 @@ export default function Integrations() {
           </ScrollMarkerReveal>
         </p>
 
-        <div className="orbit-stage" ref={stageRef}>
+        <div className="orbit-stage" ref={stageRef} aria-hidden="true">
           <div className="orbit-ring ring-1" />
           <div className="orbit-ring ring-2" />
           <div className="orbit-ring ring-3" />

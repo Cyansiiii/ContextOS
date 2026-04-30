@@ -6,7 +6,7 @@ import {
   Search, Database, MessageSquare, BrainCircuit,
   Activity, UploadCloud, Zap, Menu, X, Shield,
   CheckCircle2, ShieldCheck, Sparkles, Files,
-  Bell, Clock, ArrowUpRight, Plus, Video, CheckCircle, Github,
+  Bell, Clock, ArrowUpRight, Plus, Video, CheckCircle,
   UserRound, Save, LogOut, ChevronDown, Mail, CalendarDays, CreditCard, BarChart3, Cpu, Settings, CircleHelp
 } from 'lucide-react'
 
@@ -789,9 +789,6 @@ function App() {
           <Bell className="w-4 h-4" />
           <div className="absolute top-1 right-1 w-2 h-2 bg-emerald-500 rounded-full border border-white"></div>
         </button>
-        <a aria-label="Open ContextOS GitHub repository" href="https://github.com/Cyansiiii/ContexOS" target="_blank" rel="noopener noreferrer" className="hidden md:flex w-8 h-8 items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-500 dark:text-slate-400">
-          <Github className="w-4 h-4" />
-        </a>
         <AnimatedThemeToggler className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors text-slate-500 dark:text-slate-400 focus:outline-none" />
         <div ref={profileMenuRef} className="relative ml-1 border-l border-slate-200 pl-2 dark:border-slate-800">
           {notificationsOpen && (
@@ -893,10 +890,6 @@ function App() {
           )}
 
           <div className="text-center max-w-4xl mx-auto mb-16 relative z-10 pt-10 mt-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/60 dark:bg-white/10 border border-slate-200 dark:border-slate-800 text-sm font-medium text-slate-600 dark:text-slate-300 shadow-sm mb-6">
-              <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-              <span>Powered by AMD Ryzen AI</span>
-            </div>
             <h1 className="text-[3.5rem] md:text-[5rem] font-bold leading-[1.12] tracking-tight text-slate-900 dark:text-white mb-6 overflow-visible">
               Ready to try AI built on <br className="hidden md:block" />
               <Suspense fallback={<span className="text-[#182038] dark:text-white">your knowledge?</span>}>
@@ -940,11 +933,11 @@ function App() {
                 <button
                   onClick={searchMode === 'expert' ? handleExpertSearch : askQuestion}
                   disabled={loading}
-                  className="bg-[#8250f2] hover:bg-[#7245d6] text-white px-8 h-full rounded-full font-bold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center min-w-[140px]"
+                  className="bg-[#8250f2] hover:bg-[#7245d6] text-white px-6 sm:px-8 h-full rounded-full font-bold text-base sm:text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex shrink-0 items-center justify-center gap-2 whitespace-nowrap min-w-[156px] sm:min-w-[170px]"
                 >
                   {loading ? (
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  ) : searchMode === 'expert' ? 'Find Expert 🔍' : 'Search'}
+                  ) : searchMode === 'expert' ? <><span>Find Expert</span><span aria-hidden="true">🔍</span></> : 'Search'}
                 </button>
               </div>
             </div>
@@ -1965,7 +1958,7 @@ function App() {
             <a href="https://github.com/Cyansiiii/ContextOS/blob/main/DEPLOYMENT.md" target="_blank" rel="noreferrer" className="transition-colors hover:text-[#ED1C24]">Deployment Guide</a>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-3 text-center">
-            <span className="rounded-full bg-[#ED1C24]/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-[#ED1C24]">AMD Slingshot 2026</span>
+            <span className="rounded-full bg-[#ED1C24]/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-[#ED1C24]">TIT srigin 2026</span>
             <span className="font-medium">Made in India 🇮🇳</span>
           </div>
         </div>
